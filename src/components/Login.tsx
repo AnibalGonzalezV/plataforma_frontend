@@ -1,4 +1,6 @@
 import { useState, FormEvent } from 'react'
+import { useMutation } from '@tanstack/react-query'
+import { login } from '../api/auth'; // Asegúrate de que la ruta sea correcta
 //import { useNavigate } from 'react-router-dom';
 
 function Login() {
@@ -7,13 +9,27 @@ function Login() {
 
     //const navigate = useNavigate();
 
-    const LoginForm = async (evento: FormEvent<HTMLFormElement>) => {
-        evento.preventDefault();
+    const mutation = useMutation({
+        mutationFn: () => login(email, password),
+        onSuccess: (data) => {
+            console.log("Login successful:", data);
+            localStorage.setItem('accessToken', data.accessToken);
+            // Aquí puedes redirigir al usuario a otra página o guardar el token en el localStorage
+            // navigate('/dashboard');
+        },
+        onError: (error: any) => {
+            alert(error.message || 'Login failed');
+        },
+    });
 
+    const LoginForm = (evento: FormEvent<HTMLFormElement>) => {
+        evento.preventDefault();
+        mutation.mutate();
         console.log("Email:", email);
         console.log("Password:", password);
-    }
+    };
 
+    
     return (
         <>
             <div className="flex justify-center items-center min-h-screen bg-gray-800">
