@@ -1,4 +1,7 @@
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
+import { register } from '../api/register';
 
 function Register() {
     const [names, setNames] = useState('');
@@ -8,15 +11,21 @@ function Register() {
     const [address, setAddress] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
 
+    const navigate = useNavigate();
+
+    const mutation = useMutation({
+            mutationFn: () => register(email, password, names, lastNames, address, phoneNumber),
+            onSuccess: (data) => {
+                navigate('/');
+            },
+            onError: (error: any) => {
+                alert(error.message || 'Register failed');
+            },
+        });
+
     const RegisterForm = async (evento: FormEvent<HTMLFormElement>) => {
         evento.preventDefault();
-
-        console.log("Names:", names);
-        console.log("Last Names:", lastNames);
-        console.log("Email:", email);
-        console.log("Password:", password);
-        console.log("Address:", address);
-        console.log("Phone Number:", phoneNumber);
+        mutation.mutate();
     }
 
     return (
@@ -83,15 +92,18 @@ function Register() {
                         </div>
                         <div className="mb-4 relative">
                             <label className="block text-sm mb-1 text-gray-300">Número de celular:</label>
-                            <input
-                            type="tel"
-                            placeholder="+56912345678"
-                            pattern="\+569[0-9]{8}"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-400 rounded text-white"
-                            required
-                            />
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300 pointer-events-none">+569</span>
+                                <input
+                                    type="tel"
+                                    placeholder="12345678"
+                                    pattern="[0-9]{8}"
+                                    value={phoneNumber}
+                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                    className="w-full pl-12 px-3 py-2 border border-gray-400 rounded text-white"
+                                    required
+                                />
+                            </div>
                         </div>
                         <button
                         type="submit"
@@ -106,4 +118,4 @@ function Register() {
     )
 }
 
-export default Register
+export default Register;
