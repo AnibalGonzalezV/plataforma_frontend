@@ -12,7 +12,7 @@ export type RegisterResponse = {
 };
 
 export async function register(email: string, password: string, names: string, lastNames: string, address: string, phoneNumber: string): Promise<RegisterResponse> {
-    const res = await fetch('http://localhost:3002/usuarios/create', {
+    const res = await fetch('http://localhost:3003/users/usuarios/create', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

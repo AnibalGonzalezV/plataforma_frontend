@@ -9,7 +9,7 @@ export type LoginResponse = {
 };
 
 export async function login(email: string, password: string): Promise<LoginResponse> {
-    const res = await fetch('http://localhost:3001/auth/login', {
+    const res = await fetch('http://localhost:3003/auth/auth/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -22,5 +22,5 @@ export async function login(email: string, password: string): Promise<LoginRespo
         
     }
     
-    return res.json();
+    return await res.json();
 }

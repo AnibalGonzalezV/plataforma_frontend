@@ -7,7 +7,7 @@ const navItems = [
     { icon: ShoppingBag, label: "Pedidos", color: "text-white", path: "/home", requiredRoles: ['comprador'] }, // de momento
     { icon: Store, label: "Locatario", color: "text-white", path: "/vendor", requiredRoles: ['vendedor'] }, // de momento
     { icon: Truck, label: "Delivery", color: "text-white", path: "/courier", requiredRoles: ['repartidor'] }, // de momento
-    { icon: ShieldUser, label: "Gestión", color: "text-white", path: "/admin", requiredRoles: ['administrador '] }, // de momento
+    { icon: ShieldUser, label: "Gestión", color: "text-white", path: "/admin", requiredRoles: ['administrador'] }, // de momento
     { icon: Settings, label: "Ajustes", color: "text-white", path: "/home" }, // de momento
 ];
 
