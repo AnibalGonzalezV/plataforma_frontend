@@ -5,6 +5,8 @@ import RoleProtectedRoute from './context/ProtectedRoute';
 
 import Login from './components/Login';
 import Register from './components/Register';
+import Unauthorized from './components/Unauthorized';
+
 import Home from './components/usersComponents/Home';
 import CourierHome from './components/couriersComponents/CourierHome';
 import AdminHome from './components/adminComponents/AdminHome';
@@ -18,6 +20,7 @@ const AppRouter = () => {
                 <Routes>
                     <Route path='/' element={<Login/>}/>
                     <Route path='/register' element={<Register/>}/>
+                    <Route path='/unauthorized' element={<Unauthorized/>}/>
                     
                     <Route element={<RoleProtectedRoute allowedRoles={['comprador']}/>}>
                         <Route path='/home' element={<Home/>}/>

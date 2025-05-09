@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const navigate = useNavigate();
 
   const checkAuth = () => {
+    setLoading(true);
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       try {
@@ -32,12 +33,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const isTokenValid = decodedToken?.exp * 1000 > Date.now();
         if (!isTokenValid) {
           localStorage.clear();
+          setRoles([]);
           navigate('/');
         } else {
           setRoles(decodedToken.roles || []);
         }
       } catch (e) {
         localStorage.clear();
+        setRoles([]);
         navigate('/');
       }
     }
@@ -46,6 +49,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = () => {
     localStorage.clear();
+    setRoles([]);
     navigate('/');
   };
 
