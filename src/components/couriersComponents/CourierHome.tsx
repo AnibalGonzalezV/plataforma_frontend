@@ -1,4 +1,5 @@
-import { SideBar } from '../SideBar';
+import { SideBar } from '@/components/SideBar';
+import { CourierMenu } from './CourierMenu';
 
 function CourierHome() {
 
@@ -7,7 +8,7 @@ function CourierHome() {
         <div className="flex min-h-screen bg-gray-800">
             <SideBar/>
             
-            <h1 className="text-center text-lg mb-2 font-bold text-white">Home Repartidor</h1>
+            <CourierMenu/>
         </div>
     </>
   )

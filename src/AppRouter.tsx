@@ -1,16 +1,16 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-import { AuthProvider } from './context/AuthContext';
-import RoleProtectedRoute from './context/ProtectedRoute';
+import { AuthProvider } from '@/context/AuthContext';
+import RoleProtectedRoute from '@/context/ProtectedRoute';
 
-import Login from './components/Login';
-import Register from './components/Register';
-import Unauthorized from './components/Unauthorized';
+import Login from '@/components/Login';
+import Register from '@/components/Register';
+import Unauthorized from '@/components/Unauthorized';
 
-import Home from './components/usersComponents/Home';
-import CourierHome from './components/couriersComponents/CourierHome';
-import AdminHome from './components/adminComponents/AdminHome';
-import VendorHome from './components/vendorsComponents/VendorHome';
+import Home from '@/components/usersComponents/Home';
+import CourierHome from '@/components/couriersComponents/CourierHome';
+import AdminHome from '@/components/adminComponents/AdminHome';
+import VendorHome from '@/components/vendorsComponents/VendorHome';
 
 const AppRouter = () => {
 
