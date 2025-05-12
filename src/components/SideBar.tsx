@@ -1,9 +1,9 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu, ShoppingBag, Store, ShieldUser, Truck, Settings, LogOut } from "lucide-react";
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 
 const navItems = [
-    { icon: Menu, label: "Menu", color: "text-green-600", path: "/home" }, // de momento
     { icon: ShoppingBag, label: "Pedidos", color: "text-white", path: "/home", requiredRoles: ['comprador'] }, // de momento
     { icon: Store, label: "Locatario", color: "text-white", path: "/vendor", requiredRoles: ['vendedor'] }, // de momento
     { icon: Truck, label: "Delivery", color: "text-white", path: "/courier", requiredRoles: ['repartidor'] }, // de momento
@@ -25,26 +25,51 @@ export function SideBar() {
         return roles.some(role => requiredRoles.includes(role.name));
     };
 
+    const [isOpen, setOpen] = useState(true);
+
     return (
-        <div className="w-64 p-4 border-r h-screen flex flex-col bg-gray-700 rounded-2xl">
+        <div className={`flex flex-col h-screen sticky top-0 transition-all duration-300 p-4 bg-gray-700 ${isOpen ? 'w-52' : 'w-16'}`}>
+            <button
+                onClick={() => setOpen(!isOpen)}
+                className="w-full flex items-center justify-start p-2 text-green-600 hover:bg-gray-600 rounded-md mb-4 transition-all duration-300"
+            >
+                <div className="w-6 flex justify-center flex-shrink-0 ml-[-4px]">
+                    <Menu className="h-5 w-5" />
+                </div>
+                <span className={`ml-2 transition-all duration-300 overflow-hidden whitespace-nowrap ${isOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0'}`}>
+                    Menú
+                </span>
+            </button>
+
             <nav className="space-y-2 flex-grow">
                 {navItems.map((item, index) => (
-                    hasRole(item.requiredRoles) && <button 
-                        key={index} 
-                        className={`w-full text-left flex items-center p-2 ${item.color} hover:bg-gray-600 rounded-md`}
-                        onClick={() => pathNavigate(item.path)}
-                    >
-                        <item.icon className="mr-2 h-4 w-4" />
-                        {item.label}
-                    </button>
+                    hasRole(item.requiredRoles) && (
+                        <button
+                            key={index}
+                            className={`w-full flex items-center justify-start p-2 ${item.color} hover:bg-gray-600 rounded-md transition-all duration-300`}
+                            onClick={() => pathNavigate(item.path)}
+                        >
+                            <div className="w-6 flex justify-center flex-shrink-0 ml-[-4px]">
+                                <item.icon className="h-5 w-5" />
+                            </div>
+                            <span className={`ml-2 transition-all duration-300 overflow-hidden whitespace-nowrap ${isOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0'}`}>
+                                {item.label}
+                            </span>
+                        </button>
+                    )
                 ))}
             </nav>
-            <button 
-                className="w-full text-left flex items-center p-2 text-white hover:bg-gray-600 rounded-md mt-auto"
+
+            <button
+                className="w-full flex items-center justify-start p-2 text-white hover:bg-gray-600 rounded-md mt-auto transition-all duration-300"
                 onClick={logout}
-            >
-                <LogOut className="mr-2 h-4 w-4" />
-                Cerrar Sesión
+            >   
+                <div className="w-6 flex justify-center flex-shrink-0 ml-[-4px]">
+                    <LogOut className="h-5 w-5" />
+                </div>
+                <span className={`ml-2 transition-all duration-300 overflow-hidden whitespace-nowrap ${isOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0'}`}>
+                    Cerrar Sesión
+                </span>
             </button>
         </div>
     );

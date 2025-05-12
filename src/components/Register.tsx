@@ -1,7 +1,7 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
-import { register } from '../api/register';
+import { register } from '@/services/register';
 
 function Register() {
     const [names, setNames] = useState('');

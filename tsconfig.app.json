@@ -20,7 +20,12 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    "baseUrl": ".",  // Esto establece la raíz del proyecto
+    "paths": {
+      "@/*": ["src/*"]  // Esto mapea @ a la carpeta src
+    }
   },
   "include": ["src"]
 }
