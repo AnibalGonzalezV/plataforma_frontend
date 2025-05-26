@@ -22,7 +22,7 @@ export type Store = {
 export type StoreResponse = Store[];
 
 export async function storeList(): Promise<StoreResponse> {
-    const res = await fetch('http://localhost:3002/stores/all', {
+    const res = await fetch('http://localhost:3003/users/stores/all', {
         method: 'GET'
     });
 

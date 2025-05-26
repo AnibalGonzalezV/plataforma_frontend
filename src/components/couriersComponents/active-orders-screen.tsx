@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { CourierOrderCard } from "@/components/couriersComponents/courier-order-card"
 import { AlertCircle } from "lucide-react"
@@ -82,7 +80,9 @@ export function ActiveOrdersScreen() {
         </Alert>
       ) : (
         activeOrders.map((order) => (
-          <CourierOrderCard key={order.order_id} order={order} onComplete={handleCompleteOrder} />
+          <div className="text-white">
+            <CourierOrderCard key={order.order_id} order={order} onComplete={handleCompleteOrder} />
+          </div>
         ))
       )}
     </div>

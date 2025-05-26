@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, ShoppingBag, Store, ShieldUser, Truck, Settings, LogOut } from "lucide-react";
+import { Menu, ShoppingBag, Store, ShieldUser, Truck } from "lucide-react";
 import { useAuth } from '@/context/AuthContext';
 
 const navItems = [
@@ -8,7 +8,6 @@ const navItems = [
     { icon: Store, label: "Locatario", color: "text-white", path: "/vendor", requiredRoles: ['vendedor'] }, // de momento
     { icon: Truck, label: "Delivery", color: "text-white", path: "/courier", requiredRoles: ['repartidor'] }, // de momento
     { icon: ShieldUser, label: "Gestión", color: "text-white", path: "/admin", requiredRoles: ['administrador'] }, // de momento
-    { icon: Settings, label: "Ajustes", color: "text-white", path: "/home" }, // de momento
 ];
 
 export function SideBar() {
@@ -18,14 +17,14 @@ export function SideBar() {
         navigate(path);
     };
 
-    const { roles, logout } = useAuth();
+    const { roles } = useAuth();
 
     const hasRole = (requiredRoles?: string[]) => {
         if (!requiredRoles) return true;
         return roles.some(role => requiredRoles.includes(role.name));
     };
 
-    const [isOpen, setOpen] = useState(true);
+    const [isOpen, setOpen] = useState(false);
 
     return (
         <div className={`flex flex-col h-screen sticky top-0 transition-all duration-300 p-4 bg-gray-700 ${isOpen ? 'w-52' : 'w-16'}`}>
@@ -59,18 +58,6 @@ export function SideBar() {
                     )
                 ))}
             </nav>
-
-            <button
-                className="w-full flex items-center justify-start p-2 text-white hover:bg-gray-600 rounded-md mt-auto transition-all duration-300"
-                onClick={logout}
-            >   
-                <div className="w-6 flex justify-center flex-shrink-0 ml-[-4px]">
-                    <LogOut className="h-5 w-5" />
-                </div>
-                <span className={`ml-2 transition-all duration-300 overflow-hidden whitespace-nowrap ${isOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0'}`}>
-                    Cerrar Sesión
-                </span>
-            </button>
         </div>
     );
 }

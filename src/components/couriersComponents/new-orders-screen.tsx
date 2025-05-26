@@ -77,7 +77,11 @@ export function NewOrdersScreen() {
           <AlertDescription>Actualmente no hay nuevos pedidos para aceptar. Revisa más tarde.</AlertDescription>
         </Alert>
       ) : (
-        pendingOrders.map((order) => <OrderCard key={order.order_id} order={order} onAccept={handleAcceptOrder} />)
+        pendingOrders.map((order) => (
+          <div className="text-white">
+            <OrderCard key={order.order_id} order={order} onAccept={handleAcceptOrder} />
+          </div>
+        ))
       )}
     </div>
   )

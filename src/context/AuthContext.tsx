@@ -10,6 +10,7 @@ interface AuthContextType {
   loading: boolean;
   logout: () => void;
   checkAuth: () => void;
+  email: string;
   roles: Role[];
 }
 
@@ -21,6 +22,7 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState<string>('');
   const [roles, setRoles] = useState<Role[]>([]);
   const navigate = useNavigate();
 
@@ -36,6 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setRoles([]);
           navigate('/');
         } else {
+          setEmail(decodedToken.email);
           setRoles(decodedToken.roles || []);
         }
       } catch (e) {
@@ -58,7 +61,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [navigate]);
 
   return (
-    <AuthContext.Provider value={{ loading, logout, checkAuth, roles }}>
+    <AuthContext.Provider value={{ loading, logout, checkAuth, email, roles }}>
       {children}
     </AuthContext.Provider>
   );

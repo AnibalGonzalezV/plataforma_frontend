@@ -83,12 +83,12 @@ export function CourierOrderCard({ order, onAccept, onComplete }: CourierOrderCa
       </CardContent>
       <CardFooter className="flex justify-end gap-2 pt-2">
         {order.delivery_state === "pendiente" && onAccept && (
-          <Button onClick={() => onAccept(order.order_id)} className="bg-primary hover:bg-primary/90">
+          <Button onClick={() => onAccept(order.order_id)} className="bg-blue-700 hover:bg-blue-600">
             Aceptar Pedido
           </Button>
         )}
         {order.delivery_state === "en_proceso" && onComplete && (
-          <Button onClick={() => onComplete(order.order_id)} className="bg-primary hover:bg-primary/90">
+          <Button onClick={() => onComplete(order.order_id)} className="bg-blue-700 hover:bg-blue-600">
             Marcar Entregado
           </Button>
         )}

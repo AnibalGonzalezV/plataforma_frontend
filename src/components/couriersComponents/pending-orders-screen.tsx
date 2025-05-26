@@ -78,7 +78,9 @@ export function PendingOrdersScreen() {
         </Alert>
       ) : (
         pendingOrders.map((order) => (
-          <CourierOrderCard key={order.order_id} order={order} onAccept={handleAcceptOrder} />
+          <div className="text-white">
+            <CourierOrderCard key={order.order_id} order={order} onAccept={handleAcceptOrder} />
+          </div>
         ))
       )}
     </div>
