@@ -1,8 +1,8 @@
 import { useState, FormEvent } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../api/auth';
-import { useAuth } from '../context/AuthContext';
+import { login } from '@/services/auth';
+import { useAuth } from '@/context/AuthContext';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -16,7 +16,7 @@ function Login() {
         onSuccess: (data) => {
             localStorage.setItem('accessToken', data.access_token);
             checkAuth();
-            navigate('/home');
+            navigate('/tiendas');
         },
         onError: (error: any) => {
             alert(error.message || 'Login failed');

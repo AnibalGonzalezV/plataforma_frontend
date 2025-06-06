@@ -10,6 +10,9 @@ interface AuthContextType {
   loading: boolean;
   logout: () => void;
   checkAuth: () => void;
+  id: number;
+  name: string;
+  email: string;
   roles: Role[];
 }
 
@@ -21,6 +24,9 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
+  const [id, setId] = useState<number>(-1);
+  const [name, setName] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
   const [roles, setRoles] = useState<Role[]>([]);
   const navigate = useNavigate();
 
@@ -32,16 +38,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const decodedToken = JSON.parse(atob(accessToken.split('.')[1]));
         const isTokenValid = decodedToken?.exp * 1000 > Date.now();
         if (!isTokenValid) {
-          localStorage.clear();
-          setRoles([]);
-          navigate('/');
+          logout();
         } else {
+          setId(decodedToken.sub);
+          setName(decodedToken.name);
+          setEmail(decodedToken.email);
           setRoles(decodedToken.roles || []);
         }
       } catch (e) {
-        localStorage.clear();
-        setRoles([]);
-        navigate('/');
+        logout();
       }
     }
     setLoading(false);
@@ -49,16 +54,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = () => {
     localStorage.clear();
+    setId(-1);
+    setName('');
+    setEmail('');
     setRoles([]);
+    setLoading(false);
     navigate('/');
   };
 
   useEffect(() => {
     checkAuth();
-  }, [navigate]);
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ loading, logout, checkAuth, roles }}>
+    <AuthContext.Provider value={{ loading, logout, checkAuth, id, name, email, roles }}>
       {children}
     </AuthContext.Provider>
   );
