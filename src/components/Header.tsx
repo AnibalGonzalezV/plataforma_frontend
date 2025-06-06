@@ -24,7 +24,7 @@ const userItems = [
 
 export function Header({ onSearch }: HeaderProps) {
     const navigate = useNavigate();
-    const { email, logout } = useAuth();
+    const { name, email, logout } = useAuth();
 
     return (
         <>
@@ -46,14 +46,14 @@ export function Header({ onSearch }: HeaderProps) {
                             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                             <Avatar className="h-8 w-8 bg-gray-700 text-white">
                                 <AvatarImage src="/placeholder.svg" alt="Avatar" />
-                                <AvatarFallback>{email?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
+                                <AvatarFallback>{name?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
                             </Avatar>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56 bg-[#424c5c]" align="end" forceMount>
                             <DropdownMenuLabel className="font-normal">
                                 <div className="flex flex-col space-y-1">
-                                    <p className="text-sm font-medium leading-none text-white">Usuario</p>
+                                    <p className="text-sm font-medium leading-none text-white">{name}</p>
                                     <p className="text-xs leading-none text-muted-foreground text-white">{email}</p>
                                 </div>
                             </DropdownMenuLabel>

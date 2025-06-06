@@ -9,7 +9,7 @@ function AdminHome() {
             <SideBar/>
             <div className='flex flex-1 flex-col'>
               <Header/>
-              <h1 className="text-center text-lg mb-2 font-bold text-white">Home Administrador</h1>
+              <h1 className="text-center text-lg mb-2 font-bold text-white">Dashboard Administrador</h1>
             </div>
         </div>
     </>

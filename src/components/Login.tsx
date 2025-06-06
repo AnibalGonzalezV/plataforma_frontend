@@ -16,7 +16,7 @@ function Login() {
         onSuccess: (data) => {
             localStorage.setItem('accessToken', data.access_token);
             checkAuth();
-            navigate('/home');
+            navigate('/tiendas');
         },
         onError: (error: any) => {
             alert(error.message || 'Login failed');

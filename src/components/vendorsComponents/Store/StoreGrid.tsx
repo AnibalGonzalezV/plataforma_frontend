@@ -1,25 +1,33 @@
 import { useState, useEffect } from 'react';
-import { StoreCard } from '@/components/vendorsComponents/StoreCard';
-import type { StoreCardProps } from '@/components/vendorsComponents/StoreCard';
+import { StoreCard } from '@/components/vendorsComponents/Store/StoreCard';
+import type { StoreCardProps } from '@/components/vendorsComponents/Store/StoreCard';
 import { storeList } from '@/services/stores';
+import { useAuth } from '@/context/AuthContext';
 
 interface StoreGridProps {
   search: string;
+  filterByOwner?: boolean;
 }
 
-export function StoreGrid({ search }: StoreGridProps) {
+export function StoreGrid({ search, filterByOwner = false }: StoreGridProps) {
     const [storeItems, setStoreItems] = useState<StoreCardProps[]>([]);
+    const { id } = useAuth();
 
     useEffect(() => {
-    async function fetchStores() {
+    async function loadStores() {
       try {
         const stores = await storeList();
 
-        const formatted: StoreCardProps[] = stores.map(store => ({
+        const filteredStores = filterByOwner && id !== -1
+          ? stores.filter(store => store.owner.id === id)
+          : stores;
+
+        const formatted: StoreCardProps[] = filteredStores.map(store => ({
           id: store.id,
           image: "",
           storeName: store.name,
           score: parseFloat(store.score),
+          roleContext: filterByOwner ? 'vendor' : 'client'
         }));
 
         setStoreItems(formatted);
@@ -28,12 +36,10 @@ export function StoreGrid({ search }: StoreGridProps) {
       }
     }
 
-    fetchStores();
+    loadStores();
   }, []);
 
-    const filteredStores = storeItems.filter(store =>
-    store.storeName.toLowerCase().includes(search.toLowerCase())
-    );
+    const filteredStores = storeItems.filter(store => store.storeName.toLowerCase().includes(search.toLowerCase()));
 
     return (
         <>

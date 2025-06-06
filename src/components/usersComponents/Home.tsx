@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { SideBar } from '@/components/SideBar';
 import { Header } from '@/components/Header';
-import { StoreGrid } from '@/components/vendorsComponents/StoreGrid';
+import { StoreGrid } from '@/components/vendorsComponents/Store/StoreGrid';
 
 function Home() {
   const [searchTerm, setSearchTerm] = useState('');

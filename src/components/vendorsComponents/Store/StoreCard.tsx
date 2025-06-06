@@ -1,18 +1,30 @@
+import { useNavigate } from 'react-router-dom';
 
 export interface StoreCardProps {
     id: number
     image: string
     storeName: string
     score: number
+    roleContext?: 'vendor' | 'client';
 }
 
-export function StoreCard({image, storeName, score}: StoreCardProps) {
-
+export function StoreCard({id, image, storeName, score, roleContext}: StoreCardProps) {
+    const navigate = useNavigate();
+    const handleClick = () => {
+        if (roleContext == 'vendor') {
+            navigate(`/vendor/${id}`);
+        }
+        else {
+            navigate(`/tiendas/${id}`);
+        }
+    };
     return (
         <>
-            <div className="overflow-hidden bg-gray-700 rounded-2xl">
+            <div 
+            onClick={handleClick}
+            className="overflow-hidden bg-gray-700 rounded-2xl hover:bg-gray-600">
                 <div className="relative">
-                    <img src={image || "/vite.svg"} alt={storeName} className="w-full h-40 object-cover"/>
+                    <img src={image || "/store.svg"} alt={storeName} className="w-full h-40 object-contain object-center"/>
                 </div>
                 <div className="p-3">
                     <h3 className="font-medium mb-1 text-sm text-white">{storeName}</h3>
