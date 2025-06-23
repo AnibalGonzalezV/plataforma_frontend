@@ -26,7 +26,7 @@ export interface Order {
  * Obtiene el ID del repartidor actual
  * @returns {Promise<number>} ID del repartidor
  */
-export async function getCurrentCourierId() {
+export async function getCurrentCourierId(): Promise<number> {
   return 1 // ID del repartidor actual
 }
 
@@ -34,92 +34,80 @@ export async function getCurrentCourierId() {
  * Obtiene los pedidos pendientes
  * @returns {Promise<Order[]>} Lista de pedidos pendientes
  */
-export async function fetchPendingOrders() {
-  // Simula una llamada API para obtener pedidos pendientes
-  return [
-    {
-      order_id: 1,
-      client_name: "Ana García",
-      client_address: "Avenida Central 45, Piso 2B",
-      store_name: "Restaurante El Buen Sabor",
-      items: ["1x Pizza Margarita", "2x Refresco Cola"],
-      total_amount: 25000,
-      order_date: new Date().toISOString(),
-      delivery_state: "pendiente",
-    },
-    {
-      order_id: 2,
-      client_name: "Carlos Rodríguez",
-      client_address: "Avenida Central 45, Local 3",
-      store_name: "Burger House",
-      items: ["1x Hamburguesa Completa", "1x Patatas Fritas", "1x Batido de Chocolate"],
-      total_amount: 35000,
-      order_date: new Date().toISOString(),
-      delivery_state: "pendiente",
-    },
-  ]
+export async function fetchPendingOrders(): Promise<Order[]> {
+  const res = await fetch("http://localhost:3003/orders/new-orders", {
+    method: "GET",
+  })
+
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.message || "Failed to fetch pending orders")
+  }
+
+  return await res.json()
 }
 
 export async function fetchActiveOrders(courierId: number): Promise<Order[]> {
-  // Simula una llamada API para obtener pedidos activos del repartidor
-  return [
-    {
-      order_id: 3,
-      client_name: "Juan Martínez",
-      client_address: "Calle Secundaria 78, Casa 12",
-      store_name: "Sushi Express",
-      items: ["3x Tacos de Pollo", "1x Nachos con Queso", "2x Refresco de Limón"],
-      total_amount: 40000,
-      order_date: new Date().toISOString(),
-      delivery_state: "en_proceso",
-    },
-    {
-      order_id: 4,
-      client_name: "Laura Sánchez",
-      client_address: "Avenida del Parque 23, Piso 5A",
-      store_name: "Sushi Master",
-      items: ["1x Sushi Variado (12 piezas)", "1x Ensalada de Algas", "2x Té Verde"],
-      total_amount: 50000,
-      order_date: new Date().toISOString(),
-      delivery_state: "en_proceso",
-    },
-  ]
+  const res = await fetch("http://localhost:3003/orders/all", {
+    method: "GET",
+  })
+
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.message || "Failed to fetch active orders")
+  }
+
+  const allOrders: Order[] = await res.json()
+
+  // Filtrar pedidos activos del repartidor específico
+  return allOrders.filter((order) => order.delivery_state === "en_proceso" && (order as any).courier_id === courierId)
 }
 
 export async function fetchDeliveredOrders(courierId: number): Promise<Order[]> {
-  // Simula una llamada API para obtener pedidos entregados por el repartidor
-  return [
-    {
-      order_id: 5,
-      client_name: "Pedro Gómez",
-      client_address: "Calle del Sol 34, Bajo C",
-      store_name: "Cafetería Central",
-      items: ["2x Bocadillo Mixto", "2x Zumo de Naranja"],
-      total_amount: 18000,
-      order_date: new Date(Date.now() - 3600000).toISOString(), // 1 hora antes
-      delivery_state: "entregado",
-    },
-    {
-      order_id: 6,
-      client_name: "Sofía Fernández",
-      client_address: "Avenida Principal 56, Piso 3D",
-      store_name: "Restaurante Mediterráneo",
-      items: ["1x Paella Mixta (2 personas)", "1x Botella de Vino Tinto"],
-      total_amount: 45000,
-      order_date: new Date(Date.now() - 7200000).toISOString(), // 2 horas antes
-      delivery_state: "entregado",
-    },
-  ]
+  const res = await fetch("http://localhost:3003/orders/all", {
+    method: "GET",
+  })
+
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.message || "Failed to fetch delivered orders")
+  }
+
+  const allOrders: Order[] = await res.json()
+
+  // Filtrar pedidos entregados del repartidor específico
+  return allOrders.filter((order) => order.delivery_state === "entregado" && (order as any).courier_id === courierId)
 }
 
 export async function acceptOrder(orderId: number, courierId: number): Promise<boolean> {
-  // Simula una llamada API para aceptar un pedido
-  console.log(`Pedido ${orderId} aceptado por el repartidor ${courierId}`)
+  const res = await fetch(`http://localhost:3003/orders/assign/${orderId}/${courierId}`, {
+    method: "POST",
+  })
+
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.message || "Failed to accept order")
+  }
+
   return true
 }
 
 export async function completeOrder(orderId: number): Promise<boolean> {
-  // Simula una llamada API para marcar un pedido como entregado
-  console.log(`Pedido ${orderId} marcado como entregado`)
+  const res = await fetch(`http://localhost:3003/orders/${orderId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      delivery_state: "entregado",
+    }),
+  })
+
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.message || "Failed to complete order")
+  }
+
   return true
 }
+
