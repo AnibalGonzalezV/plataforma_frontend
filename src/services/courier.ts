@@ -1,16 +1,6 @@
-/**
- * @typedef {Object} Order
- * @property {number} order_id - ID del pedido
- * @property {string} client_name - Nombre del cliente
- * @property {string} client_address - Dirección del cliente
- * @property {string} store_name - Nombre de la tienda
- * @property {string[]} items - Lista de items del pedido
- * @property {number} total_amount - Monto total del pedido
- * @property {string} order_date - Fecha del pedido
- * @property {"pendiente"|"en_proceso"|"entregado"} delivery_state - Estado del pedido
- */
+"use client"
 
-// Definición de tipos directamente en el archivo de servicios
+
 export interface Order {
   order_id: number
   client_name: string
@@ -20,78 +10,87 @@ export interface Order {
   total_amount: number
   order_date: string
   delivery_state: "pendiente" | "en_proceso" | "entregado"
+  courier_id?: number
 }
 
-/**
- * Obtiene el ID del repartidor actual
- * @returns {Promise<number>} ID del repartidor
- */
-export async function getCurrentCourierId(): Promise<number> {
-  return 1 // ID del repartidor actual
-}
+
 
 /**
- * Obtiene los pedidos pendientes
- * @returns {Promise<Order[]>} Lista de pedidos pendientes
+ * Obtiene los pedidos pendientes (nuevos pedidos)
  */
 export async function fetchPendingOrders(): Promise<Order[]> {
   const res = await fetch("http://localhost:3003/orders/new-orders", {
     method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
   })
 
   if (!res.ok) {
     const error = await res.json()
-    throw new Error(error.message || "Failed to fetch pending orders")
+    throw new Error(error.message || "Error al obtener los pedidos pendientes")
   }
 
-  return await res.json()
+  return res.json()
 }
 
+/**
+ * Obtiene todos los pedidos (para filtrar activos/entregados)
+ */
+export async function fetchAllOrders(): Promise<Order[]> {
+  const res = await fetch("http://localhost:3003/orders/all", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.message || "Error al obtener todos los pedidos")
+  }
+
+  return res.json()
+}
+
+/**
+ * Obtiene los pedidos activos de un repartidor
+ */
 export async function fetchActiveOrders(courierId: number): Promise<Order[]> {
-  const res = await fetch("http://localhost:3003/orders/all", {
-    method: "GET",
-  })
-
-  if (!res.ok) {
-    const error = await res.json()
-    throw new Error(error.message || "Failed to fetch active orders")
-  }
-
-  const allOrders: Order[] = await res.json()
-
-  // Filtrar pedidos activos del repartidor específico
-  return allOrders.filter((order) => order.delivery_state === "en_proceso" && (order as any).courier_id === courierId)
+  const allOrders = await fetchAllOrders()
+  return allOrders.filter((order) => order.delivery_state === "en_proceso" && order.courier_id === courierId)
 }
 
+/**
+ * Obtiene los pedidos entregados de un repartidor
+ */
 export async function fetchDeliveredOrders(courierId: number): Promise<Order[]> {
-  const res = await fetch("http://localhost:3003/orders/all", {
-    method: "GET",
-  })
-
-  if (!res.ok) {
-    const error = await res.json()
-    throw new Error(error.message || "Failed to fetch delivered orders")
-  }
-
-  const allOrders: Order[] = await res.json()
-
-  // Filtrar pedidos entregados del repartidor específico
-  return allOrders.filter((order) => order.delivery_state === "entregado" && (order as any).courier_id === courierId)
+  const allOrders = await fetchAllOrders()
+  return allOrders.filter((order) => order.delivery_state === "entregado" && order.courier_id === courierId)
 }
 
+/**
+ * Acepta un pedido (asigna al repartidor)
+ */
 export async function acceptOrder(orderId: number, courierId: number): Promise<boolean> {
   const res = await fetch(`http://localhost:3003/orders/assign/${orderId}/${courierId}`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
   })
 
   if (!res.ok) {
     const error = await res.json()
-    throw new Error(error.message || "Failed to accept order")
+    throw new Error(error.message || "Error al aceptar el pedido")
   }
 
   return true
 }
 
+/**
+ * Marca un pedido como entregado
+ */
 export async function completeOrder(orderId: number): Promise<boolean> {
   const res = await fetch(`http://localhost:3003/orders/${orderId}`, {
     method: "PATCH",
@@ -105,9 +104,38 @@ export async function completeOrder(orderId: number): Promise<boolean> {
 
   if (!res.ok) {
     const error = await res.json()
-    throw new Error(error.message || "Failed to complete order")
+    throw new Error(error.message || "Error al completar el pedido")
   }
 
   return true
 }
 
+/**
+ * Obtiene el ID del repartidor actual (temporal)
+ */
+export async function getCurrentCourierId(): Promise<number> {
+  return 1 // Esto debería venir de la autenticación
+}
+
+
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("es-CL", {
+    style: "currency",
+    currency: "CLP",
+  }).format(amount)
+}
+
+export async function checkApiConnection(): Promise<boolean> {
+  try {
+    const res = await fetch("http://localhost:3003/orders/new-orders", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    return res.ok
+  } catch (error) {
+    console.error("❌ API no disponible:", error)
+    return false
+  }
+}
