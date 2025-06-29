@@ -1,20 +1,32 @@
 import { useState } from 'react';
 import { X, Trash2, Plus, Minus, ShoppingCart, Receipt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCart } from './CartContext';
+import { useCartStore } from '@/store/CartStore';
 import { useAuthStore } from '@/store/AuthStore';
 
 export function CartDrawer() {
-  const { state, closeCart, removeItem, updateQuantity, clearCart, getTotalPrice, getTotalItems } = useCart();
+  const {
+    items,
+    storeId,
+    deliveryType,
+    removeItem,
+    updateQuantity,
+    clearCart,
+    totalAmount,
+    getOrderPayload,
+  } = useCartStore();
   const [showReceipt, setShowReceipt] = useState(false);
-  const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>('delivery');
   const [orderSent, setOrderSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const setDeliveryType = (type: 'retiro_en_tienda' | 'delivery') => useCartStore.setState({ deliveryType: type });
+  const isOpen = useCartStore(state => state.isOpen);
+  const closeCart = useCartStore(state => state.closeCart);
+  const getTotalItems = () => items.reduce((acc, i) => acc + i.quantity, 0);
   const roles = useAuthStore(state => state.roles);
   const isComprador = roles.some(role => role.name === 'comprador');
 
   if (!isComprador) return null;
-  if (!state.isOpen) return null;
+  if (!isOpen) return null;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-CL', {
@@ -23,16 +35,14 @@ export function CartDrawer() {
     }).format(price);
   };
 
-  const handleBuy = async () => {
+  const handleBuy = () => {
     setShowReceipt(true);
     setOrderSent(false);
   };
 
   const handleSendOrder = async () => {
     setSending(true);
-    // Aquí deberías conectar con la API real para enviar el pedido
-    // await sendOrder(state.items, deliveryType); // CONECTAR API AQUÍ
-    setTimeout(() => { // Simulación de espera de API
+    setTimeout(() => {
       setOrderSent(true);
       clearCart();
       setSending(false);
@@ -46,8 +56,7 @@ export function CartDrawer() {
         className="fixed inset-0 bg-black/50 z-40"
         onClick={closeCart}
       />
-      
-      {/* Mini Carrito (estilo Mercado Libre) */}
+      {/* Drawer del carrito */}
       <div className="fixed bottom-20 right-6 w-80 bg-white rounded-lg shadow-2xl z-50 border border-gray-200">
         <div className="flex flex-col max-h-96">
           {/* Header */}
@@ -71,7 +80,7 @@ export function CartDrawer() {
 
           {/* Cart Items */}
           <div className="flex-1 overflow-y-auto p-4 max-h-64">
-            {state.items.length === 0 ? (
+            {items.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-gray-500">
                 <ShoppingCart className="h-12 w-12 mb-2 text-gray-300" />
                 <p className="text-center font-medium">Tu carrito está vacío</p>
@@ -79,11 +88,11 @@ export function CartDrawer() {
               </div>
             ) : (
               <div className="space-y-3">
-                {state.items.map((item) => (
-                  <div key={item.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg border">
-                    {item.image && (
+                {items.map((item) => (
+                  <div key={item.productId} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg border">
+                    {item.img && (
                       <img 
-                        src={item.image} 
+                        src={item.img} 
                         alt={item.name}
                         className="w-10 h-10 object-cover rounded"
                       />
@@ -101,7 +110,7 @@ export function CartDrawer() {
                         variant="outline"
                         size="icon"
                         className="h-6 w-6"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() => updateQuantity(item.productId, item.quantity - 1)}
                       >
                         <Minus className="h-3 w-3" />
                       </Button>
@@ -112,7 +121,7 @@ export function CartDrawer() {
                         variant="outline"
                         size="icon"
                         className="h-6 w-6"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => updateQuantity(item.productId, item.quantity + 1)}
                       >
                         <Plus className="h-3 w-3" />
                       </Button>
@@ -120,7 +129,7 @@ export function CartDrawer() {
                         variant="ghost"
                         size="icon"
                         className="h-6 w-6 text-red-500 hover:text-red-700"
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(item.productId)}
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>
@@ -132,15 +141,14 @@ export function CartDrawer() {
           </div>
 
           {/* Footer */}
-          {state.items.length > 0 && (
+          {items.length > 0 && (
             <div className="border-t p-4 bg-gray-50 rounded-b-lg">
               <div className="flex justify-between items-center mb-3">
                 <span className="text-lg font-semibold">Total:</span>
                 <span className="text-lg font-bold text-green-600">
-                  {formatPrice(getTotalPrice())}
+                  {formatPrice(totalAmount())}
                 </span>
               </div>
-              
               <div className="flex space-x-2">
                 <Button
                   variant="outline"
@@ -162,10 +170,10 @@ export function CartDrawer() {
         </div>
       </div>
 
-      {/* Modal de boleta */}
+      {/* Modal de boleta centrado */}
       {showReceipt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative animate-fade-in">
             <Button
               variant="ghost"
               size="icon"
@@ -180,8 +188,8 @@ export function CartDrawer() {
             </div>
             <div className="mb-4">
               <ul className="divide-y divide-gray-200">
-                {state.items.map(item => (
-                  <li key={item.id} className="flex justify-between py-2 text-gray-700">
+                {items.map(item => (
+                  <li key={item.productId} className="flex justify-between py-2 text-gray-700">
                     <span>{item.name} x{item.quantity}</span>
                     <span>{formatPrice(item.price * item.quantity)}</span>
                   </li>
@@ -189,7 +197,7 @@ export function CartDrawer() {
               </ul>
               <div className="flex justify-between mt-4 font-bold text-lg">
                 <span>Total:</span>
-                <span>{formatPrice(getTotalPrice())}</span>
+                <span>{formatPrice(totalAmount())}</span>
               </div>
             </div>
             <div className="mb-4">
@@ -203,17 +211,17 @@ export function CartDrawer() {
                     checked={deliveryType === 'delivery'}
                     onChange={() => setDeliveryType('delivery')}
                   />
-                  A domicilio (delivery)
+                  Envío (delivery)
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
                     name="deliveryType"
-                    value="pickup"
-                    checked={deliveryType === 'pickup'}
-                    onChange={() => setDeliveryType('pickup')}
+                    value="retiro_en_tienda"
+                    checked={deliveryType === 'retiro_en_tienda'}
+                    onChange={() => setDeliveryType('retiro_en_tienda')}
                   />
-                  Recoger en tienda
+                  Retiro en tienda
                 </label>
               </div>
             </div>
@@ -226,8 +234,11 @@ export function CartDrawer() {
             </Button>
             {orderSent && (
               <div className="text-green-700 text-center font-semibold mt-2">
-                Pedido enviado<br/>
-                {/* Aquí puedes mostrar un número de pedido, etc. */}
+                <span>¡Pedido enviado!</span><br/>
+                <span>Tipo de entrega: {deliveryType === 'delivery' ? 'Envío (delivery)' : 'Retiro en tienda'}</span>
+                <pre className="text-xs text-gray-500 mt-2 text-left bg-gray-100 p-2 rounded">
+                  {JSON.stringify(getOrderPayload(), null, 2)}
+                </pre>
               </div>
             )}
           </div>

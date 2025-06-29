@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { useCart, CartItem } from './CartContext';
+import { useCartStore } from '@/store/CartStore';
 import { useAuthStore } from '@/store/AuthStore';
 
 interface AddToCartButtonProps {
@@ -9,26 +9,26 @@ interface AddToCartButtonProps {
     name: string;
     price: number;
     image?: string;
+    storeId: number;
   };
   quantity?: number;
   className?: string;
 }
 
 export function AddToCartButton({ product, quantity = 1, className }: AddToCartButtonProps) {
-  const { addItem } = useCart();
+  const addItem = useCartStore(state => state.addItem);
   const roles = useAuthStore(state => state.roles);
   const isComprador = roles.some(role => role.name === 'comprador');
 
   const handleAddToCart = () => {
     if (!isComprador) return;
-    const cartItem: CartItem = {
-      id: product.id,
+    addItem({
+      productId: product.id,
       name: product.name,
       price: product.price,
       quantity: quantity,
-      image: product.image,
-    };
-    addItem(cartItem);
+      img: product.image,
+    }, product.storeId);
   };
 
   return (
