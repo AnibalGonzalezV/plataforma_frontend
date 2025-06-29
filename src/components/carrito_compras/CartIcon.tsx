@@ -1,10 +1,15 @@
 import { ShoppingCart, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from './CartContext';
+import { useAuthStore } from '@/store/AuthStore';
 
 export function CartIcon() {
   const { state, toggleCart, getTotalItems } = useCart();
   const totalItems = getTotalItems();
+  const roles = useAuthStore(state => state.roles);
+  const isComprador = roles.some(role => role.name === 'comprador');
+
+  if (!isComprador) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-50">

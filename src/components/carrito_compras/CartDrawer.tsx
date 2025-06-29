@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, Trash2, Plus, Minus, ShoppingCart, Receipt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from './CartContext';
+import { useAuthStore } from '@/store/AuthStore';
 
 export function CartDrawer() {
   const { state, closeCart, removeItem, updateQuantity, clearCart, getTotalPrice, getTotalItems } = useCart();
@@ -9,6 +10,11 @@ export function CartDrawer() {
   const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>('delivery');
   const [orderSent, setOrderSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const roles = useAuthStore(state => state.roles);
+  const isComprador = roles.some(role => role.name === 'comprador');
+
+  if (!isComprador) return null;
+  if (!state.isOpen) return null;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-CL', {
@@ -32,8 +38,6 @@ export function CartDrawer() {
       setSending(false);
     }, 1200);
   };
-
-  if (!state.isOpen) return null;
 
   return (
     <>
