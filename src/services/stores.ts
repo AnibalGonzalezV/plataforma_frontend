@@ -32,6 +32,7 @@ export type Tag = {
 
 export type Product = {
   productId: number;
+  img: string;
   name: string;
   description: string;
   quantity: number;

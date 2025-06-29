@@ -1,7 +1,7 @@
 import SideBar from '@/components/SideBar';
 import Header from '@/components/Header';
 
-export default function AdminHome() {
+export default function StoreManagement() {
 
   return (
     <>
@@ -9,7 +9,11 @@ export default function AdminHome() {
           <SideBar/>
           <div className='flex flex-1 flex-col'>
             <Header/>
-            <h1 className='text-center text-lg mb-2 font-bold text-white'>Dashboard Administrador</h1>
+            <div className='flex flex-1'>
+              <main className='flex-1 p-4'>
+
+              </main>
+            </div>
           </div>
       </div>
     </>

@@ -1,51 +1,51 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, ChevronDown, ChevronRight, ShoppingBag, Store, ShieldUser, Truck } from "lucide-react";
-import { useAuth } from '@/context/AuthContext';
+import { Menu, ChevronDown, ChevronRight, ShoppingBag, Store, ShieldUser, Truck } from 'lucide-react';
+import { useAuthStore } from '@/store/AuthStore';
 
 const navItems = {
     comprador: {
         icon: ShoppingBag,
-        label: "Pedidos",
+        label: 'Pedidos',
         items: [
-            { icon: ShoppingBag, label: "Tiendas", path: "/tiendas" },
-            { icon: ShoppingBag, label: "Crear pedido", path: "/tiendas/" },
+            { icon: ShoppingBag, label: 'Tiendas', path: '/tiendas' },
+            { icon: ShoppingBag, label: 'Mis pedidos', path: '/tiendas' },
         ]
     },
     vendedor: {
         icon: Store,
-        label: "Locatario",
+        label: 'Locatario',
         items: [
-            { icon: Store, label: "Gestión", path: "/vendor" },
-            { icon: Store, label: "Ventas", path: "/vendor/" },
+            { icon: Store, label: 'Mis Tiendas', path: '/vendor' },
+            { icon: Store, label: 'Gestión', path: '/vendor/managment' },
         ]
     },
     repartidor: {
         icon: Truck,
-        label: "Delivery",
+        label: 'Delivery',
         items: [
-            { icon: Truck, label: "Pedidos", path: "/courier" },
-            { icon: Truck, label: "Historial", path: "/courier/" },
+            { icon: Truck, label: 'Pedidos', path: '/courier' },
+            { icon: Truck, label: 'Historial', path: '/courier' },
         ]
     },
     administrador: {
         icon: ShieldUser,
-        label: "Gestión",
+        label: 'Gestión',
         items: [
-            { icon: ShieldUser, label: "Dashboard", path: "/admin" },
-            { icon: ShieldUser, label: "Usuarios", path: "/admin/users" },
+            { icon: ShieldUser, label: 'Dashboard', path: '/admin' },
+            { icon: ShieldUser, label: 'Usuarios', path: '/admin/users' },
         ]
     }
 };
 
-export function SideBar() {
+export default function SideBar() {
     const navigate = useNavigate();
 
     const pathNavigate = (path: string) => {
         navigate(path);
     };
 
-    const { roles } = useAuth();
+    const roles = useAuthStore(state => state.roles);
 
     const hasRole = (requiredRoles?: string[]) => {
         if (!requiredRoles) return true;
@@ -62,45 +62,45 @@ export function SideBar() {
         <div className={`flex flex-col h-screen sticky top-0 transition-all duration-300 p-4 bg-gray-700 ${isOpen ? 'w-52' : 'w-16'}`}>
             <button
                 onClick={() => setOpen(!isOpen)}
-                className="w-full flex items-center justify-start p-2 text-green-600 hover:bg-gray-600 rounded-md mb-4 transition-all duration-300"
+                className='w-full flex items-center justify-start p-2 text-green-600 hover:bg-gray-600 rounded-md mb-4 transition-all duration-300'
             >
-                <div className="w-6 flex justify-center flex-shrink-0 ml-[-4px]">
-                    <Menu className="h-5 w-5" />
+                <div className='w-6 flex justify-center flex-shrink-0 ml-[-4px]'>
+                    <Menu className='h-5 w-5' />
                 </div>
                 <span className={`ml-2 transition-all duration-300 overflow-hidden whitespace-nowrap ${isOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0'}`}>
                     Menú
                 </span>
             </button>
 
-            <nav className="space-y-2 flex-grow">
+            <nav className='space-y-2 flex-grow'>
                 {Object.entries(navItems).map(([role, group]) => (
                     hasRole([role]) && (
                         <div key={role}>
                             <button
                                 onClick={() => toggleRole(role)}
-                                className="w-full flex items-center justify-between p-2 text-white hover:bg-gray-600 rounded-md transition-all duration-300"
+                                className='w-full flex items-center justify-between p-2 text-white hover:bg-gray-600 rounded-md transition-all duration-300'
                             >
-                                <div className="w-6 flex justify-center flex-shrink-0">
-                                    <group.icon className="h-5 w-5" />
+                                <div className='w-6 flex justify-center flex-shrink-0'>
+                                    <group.icon className='h-5 w-5' />
                                     <span className={`ml-2 transition-all duration-300 whitespace-nowrap ${isOpen ? 'opacity-100 max-w-full' : 'opacity-0 max-w-0'}`}>
                                         {group.label}
                                     </span>
                                 </div>
                                 {isOpen && (
-                                    openRoles[role] ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />
+                                    openRoles[role] ? <ChevronDown className='w-5 h-5' /> : <ChevronRight className='w-5 h-5' />
                                 )}
                             </button>
 
                             {openRoles[role] && isOpen && (
-                                <div className="pl-6 mt-1 space-y-1">
+                                <div className='pl-6 mt-1 space-y-1'>
                                     {group.items.map((item, index) => (
                                         <button
                                             key={index}
                                             onClick={() => pathNavigate(item.path)}
-                                            className="w-full flex items-center p-2 text-gray-300 hover:bg-gray-600 rounded-md transition"
+                                            className='w-full flex items-center p-2 text-gray-300 hover:bg-gray-600 rounded-md transition'
                                         >
-                                            <item.icon className="h-4 w-4" />
-                                            <span className="ml-2 whitespace-nowrap">{item.label}</span>
+                                            <item.icon className='h-4 w-4' />
+                                            <span className='ml-2 whitespace-nowrap'>{item.label}</span>
                                         </button>
                                     ))}
                                 </div>

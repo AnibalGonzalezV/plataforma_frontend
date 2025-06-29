@@ -51,7 +51,7 @@ function convertBackendOrderToFrontendOrder(backendOrder: BackendOrder): Order {
  * Obtiene los pedidos pendientes (nuevos pedidos)
  */
 export async function fetchPendingOrders(): Promise<Order[]> {
-  const res = await fetch("http://localhost:3003/orders/new-orders", {
+  const res = await fetch("http://localhost:3003/orders/orders/new-orders", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -71,7 +71,7 @@ export async function fetchPendingOrders(): Promise<Order[]> {
  * Obtiene todos los pedidos
  */
 export async function fetchAllOrders(): Promise<Order[]> {
-  const res = await fetch("http://localhost:3003/orders/all", {
+  const res = await fetch("http://localhost:3003/orders/orders/all", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -107,7 +107,7 @@ export async function fetchDeliveredOrders(courierId: number): Promise<Order[]> 
  * Obtiene los items de un pedido
  */
 export async function getOrderItems(orderId: number): Promise<OrderItem[]> {
-  const res = await fetch(`http://localhost:3003/orders/${orderId}/items`, {
+  const res = await fetch(`http://localhost:3003/orders/orders/${orderId}/items`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -126,7 +126,7 @@ export async function getOrderItems(orderId: number): Promise<OrderItem[]> {
  * Acepta un pedido (asigna al repartidor)
  */
 export async function acceptOrder(orderId: number, courierId: number): Promise<boolean> {
-  const res = await fetch(`http://localhost:3003/orders/assign/${orderId}/${courierId}`, {
+  const res = await fetch(`http://localhost:3003/orders/orders/assign/${orderId}/${courierId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -145,7 +145,7 @@ export async function acceptOrder(orderId: number, courierId: number): Promise<b
  * Marca un pedido como entregado
  */
 export async function completeOrder(orderId: number): Promise<boolean> {
-  const res = await fetch(`http://localhost:3003/orders/${orderId}/mark-delivered`, {
+  const res = await fetch(`http://localhost:3003/orders/orders/${orderId}/mark-delivered`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -176,7 +176,7 @@ export function formatCurrency(amount: number): string {
 
 export async function checkApiConnection(): Promise<boolean> {
   try {
-    const res = await fetch("http://localhost:3003/orders/new-orders", {
+    const res = await fetch("http://localhost:3003/orders/orders/new-orders", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

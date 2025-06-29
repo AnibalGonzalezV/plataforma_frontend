@@ -1,14 +1,14 @@
 import { useState } from 'react';
-import { SideBar } from '@/components/SideBar';
-import { Header } from '@/components/Header';
-import { StoreGrid } from '@/components/vendorsComponents/Store/StoreGrid';
+import SideBar from '@/components/SideBar';
+import Header from '@/components/Header';
+import StoreGrid from '@/components/vendorsComponents/Store/StoreGrid';
 
-function Home() {
+export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
 
   return (
     <>
-      <div className="flex min-h-screen bg-gray-800">
+      <div className='flex min-h-screen bg-gray-800'>
         <SideBar/>
         <div className='flex flex-1 flex-col'>
           <Header onSearch={setSearchTerm}/>
@@ -22,5 +22,3 @@ function Home() {
     </>
   )
 }
-
-export default Home;

@@ -1,9 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@/styles/index.css';
-import AppRouter from './AppRouter.tsx';
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import AppRouter from './AppRouter.tsx';
 
 const queryClient = new QueryClient();
 
