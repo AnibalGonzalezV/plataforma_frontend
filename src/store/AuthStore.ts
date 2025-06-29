@@ -46,8 +46,10 @@ export const useAuthStore = create<AuthStore>()(
           } catch {
             get().logout();
           }
+          finally {
+            set({ loading: false });
+          }
         }
-        set({ loading: false });
       },
       logout: () => {
         localStorage.clear();
