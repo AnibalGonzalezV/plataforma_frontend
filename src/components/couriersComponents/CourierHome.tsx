@@ -3,7 +3,6 @@ import { Header } from '@/components/Header';
 import { CourierMenu } from './CourierMenu';
 
 function CourierHome() {
-
   return (
     <>
         <div className="flex min-h-screen bg-gray-800">

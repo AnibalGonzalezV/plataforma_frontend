@@ -22,7 +22,7 @@ export function AddUser({ onClose, onUserAdded }: AddUserProps) {
       onUserAdded();
       onClose();
     },
-    onError: (error: any) => {
+    onError: () => {
       alert('Error al registrar');
     },
   });

@@ -3,7 +3,7 @@ import { CourierOrderCard } from "@/components/couriersComponents/courier-order-
 import { AlertCircle } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { fetchDeliveredOrders, getCurrentCourierId } from "@/services/courier"
-import type { Order } from "@/types/courier"
+import type { Order } from "@/services/courier"
 import { useToast } from "@/hooks/use-toast"
 
 export function DeliveredOrdersScreen() {

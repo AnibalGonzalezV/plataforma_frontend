@@ -3,7 +3,7 @@ import { CourierOrderCard } from "@/components/couriersComponents/courier-order-
 import { AlertCircle } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { fetchPendingOrders, acceptOrder, getCurrentCourierId } from "@/services/courier"
-import type { Order } from "@/types/courier"
+import type { Order } from "@/services/courier"
 import { useToast } from "@/hooks/use-toast"
 
 export function PendingOrdersScreen() {
@@ -21,7 +21,7 @@ export function PendingOrdersScreen() {
 
         // Cargar pedidos pendientes
         const orders = await fetchPendingOrders()
-        setPendingOrders(orders as Order[])
+        setPendingOrders(orders)
       } catch (error) {
         console.error("Error al cargar pedidos pendientes:", error)
         toast({

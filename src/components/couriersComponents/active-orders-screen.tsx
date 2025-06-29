@@ -3,13 +3,12 @@ import { CourierOrderCard } from "@/components/couriersComponents/courier-order-
 import { AlertCircle } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { fetchActiveOrders, completeOrder, getCurrentCourierId } from "@/services/courier"
-import type { Order } from "@/types/courier"
+import type { Order } from "@/services/courier"
 import { useToast } from "@/hooks/use-toast"
 
 export function ActiveOrdersScreen() {
   const [activeOrders, setActiveOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
-  const [courierId, setCourierId] = useState<number | null>(null)
   const { toast } = useToast()
 
   useEffect(() => {
@@ -17,7 +16,6 @@ export function ActiveOrdersScreen() {
       try {
         // Obtener el ID del repartidor actual
         const id = await getCurrentCourierId()
-        setCourierId(id)
 
         if (id) {
           // Cargar pedidos activos del repartidor
