@@ -2,14 +2,13 @@ import { useState } from 'react';
 import { X, Trash2, Plus, Minus, ShoppingCart, Receipt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/CartStore';
-import { useAuthStore } from '@/store/AuthStore';
 
 interface CartDrawerProps {
   open: boolean;
   onClose: () => void;
 }
 
-export function CartDrawer({ open, onClose }: CartDrawerProps) {
+export default function CartDrawer({ open, onClose }: CartDrawerProps) {
   const {
     items,
     storeId,
@@ -25,11 +24,6 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const [sending, setSending] = useState(false);
   const setDeliveryType = (type: 'retiro_en_tienda' | 'delivery') => useCartStore.setState({ deliveryType: type });
   const getTotalItems = () => items.reduce((acc, i) => acc + i.quantity, 0);
-  const roles = useAuthStore(state => state.roles);
-  const isComprador = roles.some(role => role.name === 'comprador');
-
-  // Mostrar Drawer solo si el usuario es comprador, hay productos y open es true
-  if (!isComprador || items.length === 0 || !open) return null;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-CL', {
@@ -51,6 +45,8 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
       setSending(false);
     }, 1200);
   };
+  
+  if (!open) return null;
 
   return (
     <>

@@ -15,7 +15,7 @@ interface AddToCartButtonProps {
   className?: string;
 }
 
-export function AddToCartButton({ product, quantity = 1, className }: AddToCartButtonProps) {
+export default function AddToCartButton({ product, quantity = 1, className }: AddToCartButtonProps) {
   const addItem = useCartStore(state => state.addItem);
   const roles = useAuthStore(state => state.roles);
   const isComprador = roles.some(role => role.name === 'comprador');

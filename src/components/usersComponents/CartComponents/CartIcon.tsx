@@ -1,27 +1,21 @@
 import { ShoppingCart, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCart } from './CartContext';
-import { useAuthStore } from '@/store/AuthStore';
+import { useCartStore } from '@/store/CartStore';
 
-interface CartIconProps {
-  onClick?: () => void;
-}
-
-export function CartIcon({ onClick }: CartIconProps) {
-  const { state, toggleCart, getTotalItems } = useCart();
-  const totalItems = getTotalItems();
-  const roles = useAuthStore(state => state.roles);
-  const isComprador = roles.some(role => role.name === 'comprador');
-
-  if (!isComprador) return null;
+export default function CartIcon() {
+  const isOpen = useCartStore(state => state.isOpen);
+  const toggleCart = useCartStore(state => state.toggleCart);
+  const totalItems = useCartStore(state =>
+    state.items.reduce((sum, item) => sum + item.quantity, 0)
+  );
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
       <Button
-        onClick={onClick ?? toggleCart}
+        onClick={toggleCart}
         className="relative h-14 w-14 rounded-full bg-green-600 hover:bg-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-white"
       >
-        {state.isOpen ? (
+        {isOpen ? (
           <X className="h-6 w-6" />
         ) : (
           <ShoppingCart className="h-6 w-6" />
@@ -34,4 +28,4 @@ export function CartIcon({ onClick }: CartIconProps) {
       </Button>
     </div>
   );
-} 
+}

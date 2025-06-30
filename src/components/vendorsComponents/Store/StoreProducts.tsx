@@ -1,7 +1,11 @@
 import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
 import { Store, Product, storeById, productsByStore } from '@/services/stores';
+import AddToCartButton from '@/components/usersComponents/CartComponents/AddToCartButton';
+import CartIcon from '@/components/usersComponents/CartComponents/CartIcon';
+import CartDrawer from '@/components/usersComponents/CartComponents/CartDrawer';
+import { useCartStore } from '@/store/CartStore';
 import SideBar from '@/components/SideBar';
 import Header from '@/components/Header';
 import PaginationFooter from '@/components/Pagination';
@@ -31,6 +35,16 @@ export default function StoreProducts() {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = products.slice(indexOfFirstItem, indexOfLastItem);
+
+  const setActiveStore = useCartStore(state => state.setActiveStore);
+  const isOpen = useCartStore(state => state.isOpen);
+  const closeCart = useCartStore(state => state.closeCart);
+
+  useEffect(() => {
+    if (storeId) {
+      setActiveStore(Number(storeId));
+    }
+  }, [storeId]);
 
   if (loading) {
     return (
@@ -78,20 +92,34 @@ export default function StoreProducts() {
               currentItems.map(product => (
                 <div
                   key={product.productId}
-                  className='bg-gray-700 p-4 rounded-lg shadow hover:bg-gray-600'
+                  className='bg-gray-700 p-4 rounded-lg shadow hover:bg-gray-600 flex flex-col justify-between'
                 >
-                  <div className='relative'>
-                    <img
-                      src={product.img || '/burger.svg'}
-                      alt={product.name}
-                      className='w-full h-[140px] object-contain object-center'
+                  <div>
+                    <div className='relative mb-3'>
+                      <img
+                        src={product.img || '/burger.svg'}
+                        alt={product.name}
+                        className='w-full h-[140px] object-contain object-center'
+                      />
+                    </div>
+                    <h3 className='text-lg font-bold'>{product.name}</h3>
+                    <p className='text-sm text-gray-300 mb-1'>{product.description}</p>
+                    <p className='text-sm'>$ <span className='font-semibold'>{product.price}</span></p>
+                    <p className='text-sm'>Cantidad: {product.quantity}</p>
+                    <p className='text-sm text-gray-400 mt-2'>Categoría: {product.category?.name}</p>
+                  </div>
+                  <div className="mt-4">
+                    <AddToCartButton
+                      product={{
+                        id: product.productId,
+                        name: product.name,
+                        price: product.price,
+                        image: product.img,
+                        storeId: Number(storeId),
+                      }}
+                      className="w-full"
                     />
                   </div>
-                  <h3 className='text-lg font-bold'>{product.name}</h3>
-                  <p className='text-sm text-gray-300 mb-1'>{product.description}</p>
-                  <p className='text-sm'>$ <span className='font-semibold'>{product.price}</span></p>
-                  <p className='text-sm'>Cantidad: {product.quantity}</p>
-                  <p className='text-sm text-gray-400 mt-2'>Categoría: {product.category?.name}</p>
                 </div>
               ))
             )}
@@ -106,6 +134,8 @@ export default function StoreProducts() {
           />
         </div>
       </main>
+      <CartIcon />
+      <CartDrawer open={isOpen} onClose={closeCart} />
       </div>
     </div>
   );

@@ -2,14 +2,9 @@ import { useState } from 'react';
 import SideBar from '@/components/SideBar';
 import Header from '@/components/Header';
 import StoreGrid from '@/components/vendorsComponents/Store/StoreGrid';
-import { CartIcon, CartDrawer } from '@/components/carrito_compras';
-import { useAuthStore } from '@/store/AuthStore';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [cartOpen, setCartOpen] = useState(false);
-  const roles = useAuthStore(state => state.roles);
-  const isComprador = roles.some(role => role.name === 'comprador');
 
   return (
     <>
@@ -23,8 +18,6 @@ export default function Home() {
             </main>
           </div>
         </div>
-        {isComprador && <CartIcon onClick={() => setCartOpen(true)} />}
-        {isComprador && <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />}
       </div>
     </>
   )

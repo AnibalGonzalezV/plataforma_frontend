@@ -26,13 +26,16 @@ interface CartStore {
   deliveryType: 'retiro_en_tienda' | 'delivery';
   items: ItemProduct[];
 
+  isOpen: boolean;
+  toggleCart: () => void;
+  closeCart: () => void;
   addItem: (item: ItemProduct, storeId: number) => void;
   removeItem: (productId: number) => void;
   updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
-
   totalAmount: () => number;
   getOrderPayload: () => OrderDto;
+  setActiveStore: (newStoreId: number) => void;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -41,29 +44,39 @@ export const useCartStore = create<CartStore>()(
       storeId: -1,
       deliveryType: 'retiro_en_tienda',
       items: [],
+      isOpen: false,
 
-      addItem: (item, storeId) => {
-        const current = get().items;
-        const exists = current.find(i => i.productId === item.productId);
+      toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
+      closeCart: () => set({ isOpen: false }),
 
-        if (get().storeId !== -1 && get().storeId !== storeId) {
-          set({ items: [], storeId });
-        }
+      addItem: (item, newStoreId) => {
+        set((state) => {
+          if (state.storeId !== -1 && state.storeId !== newStoreId) {
+            return {
+              items: [item],
+              storeId: newStoreId,
+              deliveryType: 'retiro_en_tienda'
+            };
+          }
 
-        if (exists) {
-          set({
-            items: current.map(i =>
-              i.productId === item.productId
-                ? { ...i, quantity: i.quantity + item.quantity }
-                : i
-            ),
-          });
-        } else {
-          set({
-            storeId,
-            items: [...current, item],
-          });
-        }
+          const existingItem = state.items.find(i => i.productId === item.productId);
+          if (existingItem) {
+            return {
+              ...state,
+              items: state.items.map(i =>
+                i.productId === item.productId
+                  ? { ...i, quantity: i.quantity + item.quantity }
+                  : i
+              ),
+            };
+          }
+
+          return {
+            ...state,
+            items: [...state.items, item],
+            storeId: newStoreId
+          };
+        });
       },
 
       removeItem: (productId) => {
@@ -85,7 +98,8 @@ export const useCartStore = create<CartStore>()(
         }));
       },
 
-      clearCart: () => set({ storeId: -1, items: [] }),
+      clearCart: () =>
+        set({ storeId: -1, items: [], deliveryType: 'retiro_en_tienda' }),
 
       totalAmount: () =>
         get().items.reduce(
@@ -115,6 +129,20 @@ export const useCartStore = create<CartStore>()(
           })),
         };
       },
+
+      setActiveStore: (newStoreId: number) => {
+        const currentStoreId = get().storeId;
+        if (currentStoreId !== -1 && currentStoreId !== newStoreId) {
+          set({
+            items: [],
+            storeId: newStoreId,
+            deliveryType: 'retiro_en_tienda',
+            isOpen: false,
+          });
+        } else if (currentStoreId === -1) {
+          set({ storeId: newStoreId });
+        }
+      },
     }),
     {
       name: 'cart-storage',
@@ -122,6 +150,7 @@ export const useCartStore = create<CartStore>()(
         storeId: state.storeId,
         deliveryType: state.deliveryType,
         items: state.items,
+        isOpen: state.isOpen,
       }),
     }
   )
