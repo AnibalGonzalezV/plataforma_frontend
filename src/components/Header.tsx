@@ -18,8 +18,8 @@ interface HeaderProps {
 }
 
 const userItems = [
-    { icon: User, label: 'Perfil', path: '/home' },
-    { icon: Settings, label: 'Configuración', path: '/home' },
+    { icon: User, label: 'Perfil', path: '/perfil' },
+    { icon: Settings, label: 'Configuración', path: '/configuracion' },
 ];
 
 export default function Header({ onSearch }: HeaderProps) {

@@ -2,10 +2,18 @@ import { useState } from 'react';
 import SideBar from '@/components/SideBar';
 import Header from '@/components/Header';
 import StoreGrid from '@/components/vendorsComponents/Store/StoreGrid';
-import { Store, Plus, Search } from 'lucide-react';
+import { Store, Plus, Search, TrendingUp, Users, DollarSign, Package, Star } from 'lucide-react';
 
 export default function VendorHome() {
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Estadísticas simuladas (conectar con API real)
+  const stats = {
+    totalStores: 3,
+    totalProducts: 24,
+    totalSales: 1250000,
+    averageRating: 4.2
+  };
 
   return (
     <>
@@ -21,9 +29,63 @@ export default function VendorHome() {
                     <div className='p-2 bg-green-600/20 rounded-lg'>
                       <Store className='h-6 w-6 text-green-400' />
                     </div>
-                    <h1 className='text-3xl font-bold text-white'>Mis Tiendas</h1>
+                    <h1 className='text-3xl font-bold text-white'>Panel de Vendedor</h1>
                   </div>
                   <p className='text-gray-400 text-lg'>Gestiona y administra todas tus tiendas desde un solo lugar</p>
+                </div>
+
+                {/* Estadísticas */}
+                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8'>
+                  <div className='bg-gradient-to-br from-blue-600/20 to-blue-800/20 rounded-2xl p-6 border border-blue-600/30'>
+                    <div className='flex items-center justify-between'>
+                      <div>
+                        <p className='text-blue-300 text-sm font-medium'>Total Tiendas</p>
+                        <p className='text-2xl font-bold text-white'>{stats.totalStores}</p>
+                      </div>
+                      <div className='p-3 bg-blue-600/30 rounded-xl'>
+                        <Store className='h-6 w-6 text-blue-400' />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className='bg-gradient-to-br from-green-600/20 to-green-800/20 rounded-2xl p-6 border border-green-600/30'>
+                    <div className='flex items-center justify-between'>
+                      <div>
+                        <p className='text-green-300 text-sm font-medium'>Productos</p>
+                        <p className='text-2xl font-bold text-white'>{stats.totalProducts}</p>
+                      </div>
+                      <div className='p-3 bg-green-600/30 rounded-xl'>
+                        <Package className='h-6 w-6 text-green-400' />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className='bg-gradient-to-br from-yellow-600/20 to-yellow-800/20 rounded-2xl p-6 border border-yellow-600/30'>
+                    <div className='flex items-center justify-between'>
+                      <div>
+                        <p className='text-yellow-300 text-sm font-medium'>Ventas Totales</p>
+                        <p className='text-2xl font-bold text-white'>${(stats.totalSales / 1000).toFixed(0)}k</p>
+                      </div>
+                      <div className='p-3 bg-yellow-600/30 rounded-xl'>
+                        <DollarSign className='h-6 w-6 text-yellow-400' />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className='bg-gradient-to-br from-purple-600/20 to-purple-800/20 rounded-2xl p-6 border border-purple-600/30'>
+                    <div className='flex items-center justify-between'>
+                      <div>
+                        <p className='text-purple-300 text-sm font-medium'>Rating Promedio</p>
+                        <div className='flex items-center gap-2'>
+                          <p className='text-2xl font-bold text-white'>{stats.averageRating}</p>
+                          <Star className='h-4 w-4 text-yellow-400 fill-current' />
+                        </div>
+                      </div>
+                      <div className='p-3 bg-purple-600/30 rounded-xl'>
+                        <TrendingUp className='h-6 w-6 text-purple-400' />
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Barra de búsqueda mejorada */}
@@ -42,6 +104,13 @@ export default function VendorHome() {
 
                 {/* Grid de tiendas */}
                 <div className='bg-gray-800/50 rounded-2xl p-6 border border-gray-700/50'>
+                  <div className='flex items-center justify-between mb-6'>
+                    <h2 className='text-xl font-semibold text-white'>Mis Tiendas</h2>
+                    <button className='flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-green-500/25'>
+                      <Plus className='h-4 w-4' />
+                      Nueva Tienda
+                    </button>
+                  </div>
                   <StoreGrid search={searchTerm} filterByOwner/>
                 </div>
               </main>

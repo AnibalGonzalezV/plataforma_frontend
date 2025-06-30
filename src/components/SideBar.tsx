@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, ChevronDown, ChevronRight, ShoppingBag, Store, ShieldUser, Truck } from 'lucide-react';
+import { Menu, ChevronDown, ChevronRight, ShoppingBag, Store, ShieldUser, Truck, ListOrdered, Package, ClipboardList, BarChart3 } from 'lucide-react';
 import { useAuthStore } from '@/store/AuthStore';
 
 const navItems = {
@@ -9,7 +9,7 @@ const navItems = {
         label: 'Pedidos',
         items: [
             { icon: ShoppingBag, label: 'Tiendas', path: '/tiendas' },
-            { icon: ShoppingBag, label: 'Mis pedidos', path: '/tiendas' },
+            { icon: ListOrdered, label: 'Mis pedidos', path: '/pedidos' },
         ]
     },
     vendedor: {
@@ -17,6 +17,7 @@ const navItems = {
         label: 'Locatario',
         items: [
             { icon: Store, label: 'Mis Tiendas', path: '/vendor' },
+            { icon: Package, label: 'Pedidos', path: '/vendor/pedidos' },
             { icon: Store, label: 'Gestión', path: '/vendor/managment' },
         ]
     },
@@ -25,14 +26,14 @@ const navItems = {
         label: 'Delivery',
         items: [
             { icon: Truck, label: 'Pedidos', path: '/courier' },
-            { icon: Truck, label: 'Historial', path: '/courier' },
+            { icon: ClipboardList, label: 'Pedidos para entregar', path: '/courier/pedidos' },
         ]
     },
     administrador: {
         icon: ShieldUser,
         label: 'Gestión',
         items: [
-            { icon: ShieldUser, label: 'Dashboard', path: '/admin' },
+            { icon: BarChart3, label: 'Dashboard', path: '/admin/dashboard' },
             { icon: ShieldUser, label: 'Usuarios', path: '/admin/users' },
         ]
     }
