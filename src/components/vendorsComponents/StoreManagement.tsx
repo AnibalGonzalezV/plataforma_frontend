@@ -146,7 +146,7 @@ export default function StoreManagement() {
 
               {/* Lista de tiendas */}
               <div className='bg-gray-800/50 rounded-2xl p-6 border border-gray-700/50'>
-                <h2 className='text-xl font-semibold mb-6'>Mis Tiendas</h2>
+                <h2 className='text-xl font-semibold mb-6 text-white'>Mis Tiendas</h2>
                 
                 {filteredStores.length === 0 ? (
                   <div className='text-center py-12'>

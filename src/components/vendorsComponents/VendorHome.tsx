@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import SideBar from '@/components/SideBar';
 import Header from '@/components/Header';
-import StoreGrid from '@/components/vendorsComponents/Store/StoreGrid';
+import StoreGrid from '@/components/vendorsComponents/StoreComponents/StoreGrid';
 import { Store, Plus, Search, TrendingUp, Users, DollarSign, Package, Star } from 'lucide-react';
 
 export default function VendorHome() {
@@ -106,10 +106,6 @@ export default function VendorHome() {
                 <div className='bg-gray-800/50 rounded-2xl p-6 border border-gray-700/50'>
                   <div className='flex items-center justify-between mb-6'>
                     <h2 className='text-xl font-semibold text-white'>Mis Tiendas</h2>
-                    <button className='flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-green-500/25'>
-                      <Plus className='h-4 w-4' />
-                      Nueva Tienda
-                    </button>
                   </div>
                   <StoreGrid search={searchTerm} filterByOwner/>
                 </div>

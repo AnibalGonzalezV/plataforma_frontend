@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { storeList } from '@/services/stores';
 import { useAuthStore } from '@/store/AuthStore';
-import { StoreCard, StoreCardProps } from '@/components/vendorsComponents/Store/StoreCard';
+import { StoreCard, StoreCardProps } from '@/components/vendorsComponents/StoreComponents/StoreCard';
 import PaginationFooter from '@/components/Pagination';
 
 interface StoreGridProps {

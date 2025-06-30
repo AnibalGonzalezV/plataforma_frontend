@@ -11,6 +11,7 @@ export interface StoreCardProps {
 
 export function StoreCard({id, image, storeName, score, roleContext}: StoreCardProps) {
     const path = roleContext === 'vendor' ? `/vendor/${id}` : `/tiendas/${id}`;
+    const safeScore = Number.isFinite(score) ? score : 0;
 
     return (
         <>
@@ -66,13 +67,13 @@ export function StoreCard({id, image, storeName, score, roleContext}: StoreCardP
                     {/* Indicador de estado */}
                     <div className='mt-3 flex items-center gap-2'>
                         <div className={`w-2 h-2 rounded-full ${
-                            score === 0 ? 'bg-gray-500'
-                            : score < 4 ? 'bg-orange-500'
+                            safeScore === 0 ? 'bg-gray-500'
+                            : safeScore < 4 ? 'bg-orange-500'
                             : 'bg-green-500'
                         }`}/>
                         <span className='text-xs text-gray-400'>
-                            {score === 0 ? 'Sin calificaciones' 
-                             : score < 4 ? 'Necesita mejorar' 
+                            {safeScore === 0 ? 'Sin calificaciones' 
+                             : safeScore < 4 ? 'Necesita mejorar' 
                              : 'Excelente'}
                         </span>
                     </div>

@@ -1,13 +1,16 @@
 import { useEffect } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/store/AuthStore';
+import LoadingScreen from '@/components/LoadingScreen';
 
 interface RoleProtectedRouteProps {
   allowedRoles: string[];
 }
 
 export default function RoleProtectedRoute ({ allowedRoles }: RoleProtectedRouteProps) {
-  const { loading, checkAuth, roles } = useAuthStore();
+  const loading = useAuthStore(state => state.loading);
+  const checkAuth = useAuthStore(state => state.checkAuth);
+  const roles = useAuthStore(state => state.roles);
   const location = useLocation();
 
   useEffect(() => {
@@ -15,7 +18,7 @@ export default function RoleProtectedRoute ({ allowedRoles }: RoleProtectedRoute
   }, [location.pathname]);
 
   if (loading) {
-    return <div>Verificando sesión...</div>;
+    return <LoadingScreen />;
   }
 
   const accessToken = localStorage.getItem('accessToken');

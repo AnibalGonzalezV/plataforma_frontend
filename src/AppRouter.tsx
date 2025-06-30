@@ -8,26 +8,26 @@ import Register from '@/components/Register';
 import LoadingScreen from '@/components/LoadingScreen';
 import NotFound from '@/components/NotFound';
 import Unauthorized from '@/components/Unauthorized';
-import UserSettings from '@/components/UserSettings';
-import UserProfile from '@/components/UserProfile';
-import OrdersList from '@/components/usersComponents/OrdersList';
-import VendorOrdersList from '@/components/vendorsComponents/VendorOrdersList';
-import CourierOrdersList from '@/components/couriersComponents/CourierOrdersList';
-import AdminDashboard from '@/components/adminComponents/AdminDashboard';
-import CheckoutPayment from '@/components/usersComponents/CheckoutPayment';
 
 const Home = lazy(() => import('@/components/usersComponents/Home'));
+const UserSettings = lazy(() => import('@/components/usersComponents/UserSettings'));
+const UserProfile = lazy(() => import('@/components/usersComponents/UserProfile'));
+const OrdersList = lazy(() => import('@/components/usersComponents/OrdersList'));
+const CheckoutPayment = lazy(() => import('@/components/usersComponents/CheckoutPayment'));
 
 const CourierHome = lazy(() => import('@/components/couriersComponents/CourierHome'));
+const CourierOrdersList = lazy(() => import('@/components/couriersComponents/CourierOrdersList'));
 
 const AdminHome = lazy(() => import('@/components/adminComponents/AdminHome'));
 const UserManagement = lazy(() => import('@/components/adminComponents/UsersManage/UserManagement'));
+const AdminDashboard = lazy(() => import('@/components/adminComponents/AdminDashboard'));
 
 const VendorHome = lazy(() => import('@/components/vendorsComponents/VendorHome'));
 const VendorDashboard = lazy(() => import('@/components/vendorsComponents/VendorDashboard'));
-const VendorProducts = lazy(() => import('@/components/vendorsComponents/Store/StoreProducts'));
+const VendorProducts = lazy(() => import('@/components/vendorsComponents/StoreComponents/StoreProducts'));
 const VendorStoreView = lazy(() => import('@/components/vendorsComponents/VendorStoreView'));
 const VendorManagement = lazy(() => import('@/components/vendorsComponents/StoreManagement'));
+const VendorOrdersList = lazy(() => import('@/components/vendorsComponents/VendorOrdersList'));
 
 export default function AppRouter () {
 
@@ -45,6 +45,8 @@ export default function AppRouter () {
                         <Route path='/tiendas/:storeId' element={<VendorProducts/>}/>
                         <Route path='/pedidos' element={<OrdersList/>}/>
                         <Route path='/pago' element={<CheckoutPayment/>}/>
+                        <Route path='/configuracion' element={<UserSettings/>}/>
+                        <Route path='/perfil' element={<UserProfile/>}/>
                     </Route>
                     <Route element={<RoleProtectedRoute allowedRoles={['vendedor']}/>}>
                         <Route path='/vendor' element={<VendorHome/>}/>
@@ -62,8 +64,6 @@ export default function AppRouter () {
                         <Route path='/admin/users' element={<UserManagement/>}/>
                         <Route path='/admin/dashboard' element={<AdminDashboard/>}/>
                     </Route>
-                    <Route path='/configuracion' element={<UserSettings/>}/>
-                    <Route path='/perfil' element={<UserProfile/>}/>
                 </Routes>
             </Suspense>
         </Router>

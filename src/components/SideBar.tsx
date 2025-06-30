@@ -16,9 +16,9 @@ const navItems = {
         icon: Store,
         label: 'Locatario',
         items: [
+            { icon: Store, label: 'Gestión', path: '/vendor/managment' },
             { icon: Store, label: 'Mis Tiendas', path: '/vendor' },
             { icon: Package, label: 'Pedidos', path: '/vendor/pedidos' },
-            { icon: Store, label: 'Gestión', path: '/vendor/managment' },
         ]
     },
     repartidor: {
@@ -26,7 +26,7 @@ const navItems = {
         label: 'Delivery',
         items: [
             { icon: Truck, label: 'Pedidos', path: '/courier' },
-            { icon: ClipboardList, label: 'Pedidos para entregar', path: '/courier/pedidos' },
+            { icon: ClipboardList, label: 'Registro Pedidos', path: '/courier/pedidos' },
         ]
     },
     administrador: {
