@@ -3,31 +3,29 @@ import Header from '@/components/Header';
 import { useState } from 'react';
 
 export default function StoreManagement() {
-  // Estado para crear tienda
-  const [storeName, setStoreName] = useState('');
-  const [storeAddress, setStoreAddress] = useState('');
-  const [storeMessage, setStoreMessage] = useState('');
-
   // Estado para crear categoría
   const [categoryName, setCategoryName] = useState('');
   const [categoryMessage, setCategoryMessage] = useState('');
 
-  // Handler simulado para crear tienda
-  const handleCreateStore = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // === LLAMA AQUÍ A LA FUNCIÓN DEL SERVICIO PARA CREAR TIENDA ===
-    // Ejemplo:
-    // await createStore({ name: storeName, address: storeAddress });
-    setStoreMessage(`Tienda "${storeName}" creada correctamente!`);
-    setStoreName('');
-    setStoreAddress('');
+  // Aquí deberías obtener la lista de tiendas desde la API
+  // Ejemplo:
+  // const { data: tiendas, isLoading } = useQuery(['stores'], getStores);
+  // Reemplaza el siguiente array por tu fetch real
+  // const tiendas = ...
+
+  const handleEditStore = (store: any) => {
+    // Llama aquí a la API para editar tienda
+    // await updateStore(store.id, { name: store.name, address: store.address });
   };
 
-  // Handler simulado para crear categoría
+  const handleDeleteStore = (storeId: number) => {
+    // Llama aquí a la API para eliminar tienda
+    // await deleteStore(storeId);
+  };
+
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
-    // === LLAMA AQUÍ A LA FUNCIÓN DEL SERVICIO PARA CREAR CATEGORÍA ===
-    // Ejemplo:
+    // Llama aquí a la API para crear categoría
     // await createCategory({ name: categoryName });
     setCategoryMessage(`Categoría "${categoryName}" creada correctamente!`);
     setCategoryName('');
@@ -41,22 +39,14 @@ export default function StoreManagement() {
             <Header/>
             <div className='flex flex-1'>
               <main className='flex-1 p-4'>
-                <div className="max-w-xl mx-auto bg-white rounded-lg shadow-md p-6 mb-8">
-                  <h2 className="text-xl font-bold mb-4 text-gray-800">Crear nueva tienda</h2>
-                  <form onSubmit={handleCreateStore} className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Nombre de la tienda</label>
-                      <input type="text" value={storeName} onChange={e => setStoreName(e.target.value)} required className="w-full border border-gray-300 rounded px-3 py-2" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Dirección</label>
-                      <input type="text" value={storeAddress} onChange={e => setStoreAddress(e.target.value)} required className="w-full border border-gray-300 rounded px-3 py-2" />
-                    </div>
-                    <button type="submit" className="w-full py-2 rounded bg-green-600 hover:bg-green-700 text-white font-semibold">Crear tienda</button>
-                  </form>
-                  {storeMessage && <div className="mt-2 text-green-700 font-medium">{storeMessage}</div>}
-                </div>
-
+                {/* Aquí deberías mapear la lista de tiendas obtenida de la API */}
+                {/* Ejemplo:
+                <ul>
+                  {tiendas.map(tienda => (
+                    <li key={tienda.id}>...</li>
+                  ))}
+                </ul>
+                */}
                 <div className="max-w-xl mx-auto bg-white rounded-lg shadow-md p-6">
                   <h2 className="text-xl font-bold mb-4 text-gray-800">Crear nueva categoría</h2>
                   <form onSubmit={handleCreateCategory} className="space-y-4">

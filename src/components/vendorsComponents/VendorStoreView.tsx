@@ -23,25 +23,37 @@ export default function VendorStoreView() {
   const [tagName, setTagName] = useState('');
   const [tagMessage, setTagMessage] = useState('');
 
-  // Handler simulado para agregar producto
+  // Aquí deberías obtener la lista de productos desde la API
+  // Ejemplo:
+  // const { data: productos, isLoading: loadingProductos } = useQuery(['products', storeId], () => getProductsByStore(storeId));
+  // Reemplaza el siguiente array por tu fetch real
+  // const productos = ...
+
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    // === LLAMA AQUÍ A LA FUNCIÓN DEL SERVICIO PARA AGREGAR PRODUCTO ===
-    // Ejemplo:
+    // Llama aquí a la API para agregar producto
     // await addProductToStore(storeId, { name: productName, price: productPrice });
     setProductMessage(`Producto "${productName}" agregado a la tienda #${storeId}!`);
     setProductName('');
     setProductPrice('');
   };
 
-  // Handler simulado para agregar tag
   const handleAddTag = async (e: React.FormEvent) => {
     e.preventDefault();
-    // === LLAMA AQUÍ A LA FUNCIÓN DEL SERVICIO PARA AGREGAR TAG ===
-    // Ejemplo:
+    // Llama aquí a la API para agregar tag
     // await addTagToStore(storeId, { name: tagName });
     setTagMessage(`Tag "${tagName}" agregado a la tienda #${storeId}!`);
     setTagName('');
+  };
+
+  const handleEditProduct = (product: any) => {
+    // Llama aquí a la API para editar producto
+    // await updateProduct(product.id, { name: product.name, price: product.price });
+  };
+
+  const handleDeleteProduct = (productId: number) => {
+    // Llama aquí a la API para eliminar producto
+    // await deleteProduct(productId);
   };
 
   if (isLoading) {
@@ -95,6 +107,15 @@ export default function VendorStoreView() {
                     <h1 className='text-2xl font-bold mb-4'>Panel de Tienda: {store.name}</h1>
                     <p><span className='font-semibold'>Dirección:</span> {store.address}</p>
                     <p><span className='font-semibold'>Puntaje:</span> {store.score}</p>
+
+                    {/* Aquí deberías mapear la lista de productos obtenida de la API */}
+                    {/* Ejemplo:
+                    <ul>
+                      {productos.map(producto => (
+                        <li key={producto.id}>...</li>
+                      ))}
+                    </ul>
+                    */}
 
                     <div className="max-w-xl bg-white rounded-lg shadow-md p-6 mt-8 mb-8 text-gray-900">
                       <h2 className="text-xl font-bold mb-4">Agregar producto</h2>
