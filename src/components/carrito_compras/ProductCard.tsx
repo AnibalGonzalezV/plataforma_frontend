@@ -9,9 +9,10 @@ interface ProductCardProps {
     description?: string;
     image?: string;
   };
+  storeId: number;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, storeId }: ProductCardProps) {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
@@ -38,7 +39,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </p>
       </CardContent>
       <CardFooter>
-        <AddToCartButton product={product} className="w-full" />
+        <AddToCartButton product={{ ...product, storeId }} className="w-full" />
       </CardFooter>
     </Card>
   );

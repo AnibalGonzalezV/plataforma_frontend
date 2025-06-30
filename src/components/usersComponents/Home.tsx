@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/AuthStore';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [cartOpen, setCartOpen] = useState(false);
   const roles = useAuthStore(state => state.roles);
   const isComprador = roles.some(role => role.name === 'comprador');
 
@@ -22,8 +23,8 @@ export default function Home() {
             </main>
           </div>
         </div>
-        {isComprador && <CartIcon />}
-        {isComprador && <CartDrawer />}
+        {isComprador && <CartIcon onClick={() => setCartOpen(true)} />}
+        {isComprador && <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />}
       </div>
     </>
   )

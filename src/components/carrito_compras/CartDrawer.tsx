@@ -4,7 +4,12 @@ import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/store/CartStore';
 import { useAuthStore } from '@/store/AuthStore';
 
-export function CartDrawer() {
+interface CartDrawerProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const {
     items,
     storeId,
@@ -19,14 +24,12 @@ export function CartDrawer() {
   const [orderSent, setOrderSent] = useState(false);
   const [sending, setSending] = useState(false);
   const setDeliveryType = (type: 'retiro_en_tienda' | 'delivery') => useCartStore.setState({ deliveryType: type });
-  const isOpen = useCartStore(state => state.isOpen);
-  const closeCart = useCartStore(state => state.closeCart);
   const getTotalItems = () => items.reduce((acc, i) => acc + i.quantity, 0);
   const roles = useAuthStore(state => state.roles);
   const isComprador = roles.some(role => role.name === 'comprador');
 
-  if (!isComprador) return null;
-  if (!isOpen) return null;
+  // Mostrar Drawer solo si el usuario es comprador, hay productos y open es true
+  if (!isComprador || items.length === 0 || !open) return null;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-CL', {
@@ -51,10 +54,10 @@ export function CartDrawer() {
 
   return (
     <>
-      {/* Overlay */}
+      {/* Overlay (cierra el Drawer al hacer click) */}
       <div 
         className="fixed inset-0 bg-black/50 z-40"
-        onClick={closeCart}
+        onClick={onClose}
       />
       {/* Drawer del carrito */}
       <div className="fixed bottom-20 right-6 w-80 bg-white rounded-lg shadow-2xl z-50 border border-gray-200">
@@ -71,7 +74,7 @@ export function CartDrawer() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={closeCart}
+              onClick={onClose}
               className="h-8 w-8"
             >
               <X className="h-4 w-4" />
@@ -178,7 +181,7 @@ export function CartDrawer() {
               variant="ghost"
               size="icon"
               className="absolute top-2 right-2"
-              onClick={() => setShowReceipt(false)}
+              onClick={onClose}
             >
               <X className="h-5 w-5" />
             </Button>
