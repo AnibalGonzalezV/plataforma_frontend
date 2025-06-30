@@ -1,7 +1,7 @@
 import SideBar from '@/components/SideBar';
 import Header from '@/components/Header';
 import { useState } from 'react';
-import { Store, Plus, Tag, Settings, X, CheckCircle, AlertCircle } from 'lucide-react';
+import { Store, Plus, Tag, Settings, X, CheckCircle, AlertCircle, FolderPlus } from 'lucide-react';
 
 export default function StoreManagement() {
   // Estado para crear tienda (modal)
@@ -10,8 +10,10 @@ export default function StoreManagement() {
   const [storeAddress, setStoreAddress] = useState('');
   const [storeMessage, setStoreMessage] = useState('');
 
-  // Estado para crear categoría
+  // Estado para crear categoría (modal)
+  const [showCreateCategory, setShowCreateCategory] = useState(false);
   const [categoryName, setCategoryName] = useState('');
+  const [categoryDescription, setCategoryDescription] = useState('');
   const [categoryMessage, setCategoryMessage] = useState('');
 
   // Aquí deberías obtener la lista de tiendas desde la API
@@ -42,9 +44,11 @@ export default function StoreManagement() {
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     // Llama aquí a la API para crear categoría
-    // await createCategory({ name: categoryName });
+    // await createCategory({ name: categoryName, description: categoryDescription });
     setCategoryMessage(`Categoría "${categoryName}" creada correctamente!`);
     setCategoryName('');
+    setCategoryDescription('');
+    setShowCreateCategory(false);
   };
 
   return (
@@ -101,23 +105,13 @@ export default function StoreManagement() {
                       <h2 className='text-xl font-semibold text-white'>Nueva Categoría</h2>
                     </div>
                     <p className='text-gray-400 mb-4'>Organiza tus productos con categorías personalizadas</p>
-                    <form onSubmit={handleCreateCategory} className='space-y-3'>
-                      <input 
-                        type="text" 
-                        value={categoryName} 
-                        onChange={e => setCategoryName(e.target.value)} 
-                        placeholder="Nombre de la categoría"
-                        required 
-                        className='w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200' 
-                      />
-                      <button 
-                        type="submit" 
-                        className='flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25'
-                      >
-                        <Plus className='h-4 w-4' />
-                        Crear Categoría
-                      </button>
-                    </form>
+                    <button
+                      onClick={() => setShowCreateCategory(true)}
+                      className='flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25'
+                    >
+                      <FolderPlus className='h-4 w-4' />
+                      Crear Categoría
+                    </button>
                     {categoryMessage && (
                       <div className='mt-3 flex items-center gap-2 text-blue-400 text-sm'>
                         <CheckCircle className='h-4 w-4' />
@@ -207,6 +201,68 @@ export default function StoreManagement() {
                               className="flex-1 py-2 px-4 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium transition-all duration-200 hover:shadow-lg hover:shadow-green-500/25"
                             >
                               Crear Tienda
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Modal para crear categoría */}
+                {showCreateCategory && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                    <div className="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 border border-gray-700">
+                      <div className='p-6'>
+                        <div className='flex items-center justify-between mb-6'>
+                          <div className='flex items-center gap-3'>
+                            <div className='p-2 bg-blue-600/20 rounded-lg'>
+                              <Tag className='h-5 w-5 text-blue-400' />
+                            </div>
+                            <h2 className="text-xl font-bold text-white">Nueva Categoría</h2>
+                          </div>
+                          <button
+                            className="text-gray-400 hover:text-white transition-colors"
+                            onClick={() => setShowCreateCategory(false)}
+                          >
+                            <X className='h-5 w-5' />
+                          </button>
+                        </div>
+                        <form onSubmit={handleCreateCategory} className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Nombre de la categoría</label>
+                            <input 
+                              type="text" 
+                              value={categoryName} 
+                              onChange={e => setCategoryName(e.target.value)} 
+                              required 
+                              className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" 
+                              placeholder="Ej: Bebidas"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-300 mb-2">Descripción (opcional)</label>
+                            <textarea 
+                              value={categoryDescription} 
+                              onChange={e => setCategoryDescription(e.target.value)} 
+                              rows={3}
+                              className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none" 
+                              placeholder="Describe brevemente esta categoría..."
+                            />
+                          </div>
+                          <div className="flex gap-3 pt-4">
+                            <button 
+                              type="button" 
+                              onClick={() => setShowCreateCategory(false)} 
+                              className="flex-1 py-2 px-4 rounded-lg bg-gray-600 hover:bg-gray-500 text-white font-medium transition-all duration-200"
+                            >
+                              Cancelar
+                            </button>
+                            <button 
+                              type="submit" 
+                              className="flex-1 py-2 px-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-200 hover:shadow-lg hover:shadow-blue-500/25"
+                            >
+                              Crear Categoría
                             </button>
                           </div>
                         </form>
