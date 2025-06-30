@@ -8,13 +8,16 @@ export default function Home() {
 
   return (
     <>
-      <div className='flex min-h-screen bg-gray-800'>
+      <div className='flex min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900'>
         <SideBar/>
         <div className='flex flex-1 flex-col'>
           <Header onSearch={setSearchTerm}/>
           <div className='flex flex-1'>
-            <main className='flex-1 p-4'>
-              <StoreGrid search={searchTerm}/>
+            <main className='flex-1 p-8 flex flex-col items-center'>
+              <h1 className='text-4xl font-bold mb-8 text-white text-center'>Tiendas disponibles</h1>
+              <div className='w-full max-w-7xl'>
+                <StoreGrid search={searchTerm}/>
+              </div>
             </main>
           </div>
         </div>

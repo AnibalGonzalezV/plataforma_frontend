@@ -31,16 +31,18 @@ export default function Header({ onSearch }: HeaderProps) {
 
     return (
         <>
-            <div className='flex items-center p-4 grap-4 bg-[#424c5c]'>
+            <div className='flex items-center p-4 gap-4 bg-[#424c5c]'>
                 {onSearch && (
-                    <div className='flex-1 relative pr-4'>
-                        <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-white'/>
-                        <input 
-                        type='text'
-                        placeholder='Buscar local'
-                        onChange={(e) => onSearch(e.target.value)}
-                        className='pl-10 pr-10 w-full border border-gray-400 text-white rounded-2xl'
-                        />
+                    <div className='flex-1 flex justify-center'>
+                        <div className='relative w-full max-w-3xl'>
+                            <Search className='absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-white'/>
+                            <input 
+                                type='text'
+                                placeholder='Buscar local'
+                                onChange={(e) => onSearch(e.target.value)}
+                                className='w-full pl-12 pr-4 py-4 bg-gray-700/50 border border-gray-600 rounded-2xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg transition-all duration-200 shadow-sm'
+                            />
+                        </div>
                     </div>
                 )}
                 <div className='pr-2 ml-auto'>

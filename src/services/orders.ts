@@ -1,7 +1,13 @@
 // Servicio simulado para enviar pedidos desde el carrito
 // Cuando conectes a la API real, reemplaza la función sendOrder por la llamada real
 
-import type { CartItem } from '@/components/carrito_compras/CartContext';
+// Tipo temporal para CartItem (ajusta según tu modelo real)
+type CartItem = {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+};
 
 export async function sendOrder(_items: CartItem[], _deliveryType: 'delivery' | 'pickup') {
   // CONECTAR API AQUÍ: Aquí deberías hacer un fetch/post a tu backend para crear el pedido
