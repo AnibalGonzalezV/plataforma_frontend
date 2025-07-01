@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Trash2, Plus, Minus, ShoppingCart, Receipt } from 'lucide-react';
+import { X, Trash2, Plus, Minus, ShoppingCart, Receipt, CreditCard, Banknote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCartStore, ItemProduct } from '@/store/CartStore';
 import { useMutation } from '@tanstack/react-query';
@@ -27,6 +27,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
   const setDeliveryType = (type: 'retiro_en_tienda' | 'delivery') => useCartStore.setState({ deliveryType: type });
   const getTotalItems = () => items.reduce((acc, i) => acc + i.quantity, 0);
   const [receiptItems, setReceiptItems] = useState<ItemProduct[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState<'saldo' | 'transferencia'>('saldo');
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-CL', {
@@ -259,6 +260,31 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   </label>
                 </div>
               )}
+            </div>
+            <div className="mb-4">
+              <label className="block font-medium mb-2">Método de pago</label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="saldo"
+                    checked={paymentMethod === 'saldo'}
+                    onChange={() => setPaymentMethod('saldo')}
+                  />
+                  <CreditCard className="h-5 w-5 text-blue-400" /> Saldo interno
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="transferencia"
+                    checked={paymentMethod === 'transferencia'}
+                    onChange={() => setPaymentMethod('transferencia')}
+                  />
+                  <Banknote className="h-5 w-5 text-green-400" /> Transferencia
+                </label>
+              </div>
             </div>
             <Button
               onClick={handleSendOrder}
