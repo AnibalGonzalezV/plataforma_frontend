@@ -68,7 +68,7 @@ export async function getUsersCountByRole(): Promise<{ role: string; count: numb
 // Obtener todos los usuarios
 export async function getAllUsers(): Promise<any[]> {
   try {
-    const response = await fetch('http://localhost:3003/users/usuarios/all', {
+    const response = await fetch('http://localhost:3003/users/users/usuarios/all', {
       headers: getAuthHeaders(),
     });
     if (!response.ok) {
@@ -84,7 +84,7 @@ export async function getAllUsers(): Promise<any[]> {
 // Obtener estadísticas de pedidos por estado
 export async function getOrdersByState(): Promise<{ state: string; count: number }[]> {
   try {
-    const response = await fetch('http://localhost:3003/orders/orders/state-count', {
+    const response = await fetch('http://localhost:3003/orders/orders/orders/state-count', {
       headers: getAuthHeaders(),
     });
     if (!response.ok) {
@@ -100,7 +100,7 @@ export async function getOrdersByState(): Promise<{ state: string; count: number
 // Obtener todos los pedidos
 export async function getAllOrders(): Promise<any[]> {
   try {
-    const response = await fetch('http://localhost:3003/orders/orders/all', {
+    const response = await fetch('http://localhost:3003/orders/orders/orders/all', {
       headers: getAuthHeaders(),
     });
     if (!response.ok) {
@@ -116,7 +116,7 @@ export async function getAllOrders(): Promise<any[]> {
 // Obtener todas las tiendas
 export async function getAllStores(): Promise<any[]> {
   try {
-    const response = await fetch('http://localhost:3003/users/stores/all', {
+    const response = await fetch('http://localhost:3003/users/users/stores/all', {
       headers: getAuthHeaders(),
     });
     if (!response.ok) {
@@ -132,7 +132,7 @@ export async function getAllStores(): Promise<any[]> {
 // Obtener todos los productos
 export async function getAllProducts(): Promise<any[]> {
   try {
-    const response = await fetch('http://localhost:3003/products/products/all', {
+    const response = await fetch('http://localhost:3003/products/products/products/all', {
       headers: getAuthHeaders(),
     });
     if (!response.ok) {
@@ -148,7 +148,7 @@ export async function getAllProducts(): Promise<any[]> {
 // Obtener todos los repartidores
 export async function getAllCouriers(): Promise<any[]> {
   try {
-    const response = await fetch('http://localhost:3003/users/couriers/all', {
+    const response = await fetch('http://localhost:3003/users/users/couriers/all', {
       headers: getAuthHeaders(),
     });
     if (!response.ok) {
@@ -225,9 +225,9 @@ export async function getChartData() {
     ]);
 
     return {
-      salesByMonth: [], // No datos simulados
+      salesByMonth: [], 
       ordersByState,
-      recentOrders: allOrders.slice(0, 10), // Últimos 10 pedidos reales
+      recentOrders: allOrders.slice(0, 10), 
     };
   } catch (error) {
     console.error('Error fetching chart data:', error);
