@@ -15,7 +15,7 @@ export type Store = {
   id: number;
   name: string;
   address: string;
-  score: string;
+  score: number;
   owner: Owner;
   imageUrl?: string
 };
@@ -56,7 +56,7 @@ export async function storeList(): Promise<StoreResponse> {
     }
 
     const data: StoreResponse = await res.json();
-    return data.sort((a, b) => parseFloat(b.score) - parseFloat(a.score));
+    return data.sort((a, b) => b.score - a.score);
 }
 
 export async function storeById(id: number): Promise<Store> {

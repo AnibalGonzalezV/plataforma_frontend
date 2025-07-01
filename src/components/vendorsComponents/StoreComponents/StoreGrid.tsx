@@ -26,14 +26,16 @@ export default function StoreGrid({ search, filterByOwner = false }: StoreGridPr
     id: store.id,
     image: "",
     storeName: store.name,
-    score: parseFloat(store.score),
+    score: store.score,
+    address: store.address || "",
     roleContext: filterByOwner ? 'vendor' : 'client',
   }));
 
-  const filteredStores = formattedStores.filter(store => 
-    store.storeName.toLowerCase().includes(search.toLowerCase())
-  );
 
+  const filteredStores = formattedStores.filter(store => 
+    store.storeName.toLowerCase().includes(search.toLowerCase()) ||
+    store.address.toLowerCase().includes(search.toLowerCase())
+  );
   const itemsPerPage = 16;
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(filteredStores.length / itemsPerPage);

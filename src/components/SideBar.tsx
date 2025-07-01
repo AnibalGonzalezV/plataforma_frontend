@@ -16,8 +16,7 @@ const navItems = {
         icon: Store,
         label: 'Locatario',
         items: [
-            { icon: Store, label: 'Gestión', path: '/vendor/managment' },
-            { icon: Store, label: 'Mis Tiendas', path: '/vendor' },
+            { icon: Store, label: 'Mis Tiendas', path: '/vendor/managment' },
             { icon: Package, label: 'Pedidos', path: '/vendor/pedidos' },
         ]
     },

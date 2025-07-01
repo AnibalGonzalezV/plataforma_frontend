@@ -6,6 +6,7 @@ export interface StoreCardProps {
     image: string
     storeName: string
     score: number
+    address: string
     roleContext?: 'vendor' | 'client';
 }
 

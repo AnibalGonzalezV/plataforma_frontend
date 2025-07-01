@@ -1,7 +1,12 @@
 import { useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useAuthStore } from '@/store/AuthStore';
+import { createStore, storeList } from '@/services/stores';
+import type { Store as StoreType } from '@/services/stores';
+import StoreGrid from '@/components/vendorsComponents/StoreComponents/StoreGrid';
 import SideBar from '@/components/SideBar';
 import Header from '@/components/Header';
-import { Store, Plus, Search, MapPin, Star, Edit, Trash2, X, CheckCircle, Building2, Users, DollarSign } from 'lucide-react';
+import { Store , Plus, Search, Star, X, CheckCircle, Building2, Users, DollarSign } from 'lucide-react';
 
 export default function StoreManagement() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -10,26 +15,32 @@ export default function StoreManagement() {
   const [storeAddress, setStoreAddress] = useState('');
   const [storeMessage, setStoreMessage] = useState('');
 
-  // Simulación de tiendas (reemplazar por fetch real)
-  const stores = [
-    { id: 1, name: 'Restaurante El Buen Sabor', address: 'Av. Principal 123', score: 4.5, products: 12, sales: 250000 },
-    { id: 2, name: 'Cafetería Central', address: 'Calle Comercial 456', score: 4.2, products: 8, sales: 180000 },
-    { id: 3, name: 'Pizzería La Italiana', address: 'Plaza Mayor 789', score: 4.8, products: 15, sales: 320000 }
-  ];
+  const userId = useAuthStore(state => state.id);
+  const queryClient = useQueryClient();
+  const { data: stores = [], isLoading, isError } = useQuery<StoreType[]>({
+    queryKey: ['stores'],
+    queryFn: () => storeList()
+  });
 
-  const filteredStores = stores.filter(store => 
-    store.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    store.address.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const storesFiltred = stores.filter(store => store.owner.id === userId);
+
+  const createMutation = useMutation({
+      mutationFn: () => createStore(userId, storeName, storeAddress, 0),
+      onSuccess: (newStore) => {
+        queryClient.invalidateQueries({ queryKey: ['stores'] });
+        setStoreMessage(`Tienda "${newStore.name}" creada exitosamente!`);
+        setStoreName('');
+        setStoreAddress('');
+        setShowCreateStore(false);
+      },
+      onError: () => {
+        setStoreMessage(`Error al crear la Tienda`);
+      },
+    });
 
   const handleCreateStore = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Llama aquí a la API para crear tienda
-    // await createStore({ name: storeName, address: storeAddress });
-    setStoreMessage(`Tienda "${storeName}" creada exitosamente!`);
-    setStoreName('');
-    setStoreAddress('');
-    setShowCreateStore(false);
+    createMutation.mutate();
   };
 
   const handleEditStore = (storeId: number) => {
@@ -44,10 +55,10 @@ export default function StoreManagement() {
 
   // Estadísticas generales
   const totalStats = {
-    stores: stores.length,
-    totalProducts: stores.reduce((sum, store) => sum + store.products, 0),
-    totalSales: stores.reduce((sum, store) => sum + store.sales, 0),
-    averageRating: (stores.reduce((sum, store) => sum + store.score, 0) / stores.length).toFixed(1)
+    stores: storesFiltred.length,
+    totalProducts: 0,
+    totalSales: 0,
+    averageRating: (storesFiltred.reduce((sum, store) => sum + store.score, 0) / stores.length).toFixed(1)
   };
 
   return (
@@ -146,85 +157,10 @@ export default function StoreManagement() {
 
               {/* Lista de tiendas */}
               <div className='bg-gray-800/50 rounded-2xl p-6 border border-gray-700/50'>
-                <h2 className='text-xl font-semibold mb-6 text-white'>Mis Tiendas</h2>
-                
-                {filteredStores.length === 0 ? (
-                  <div className='text-center py-12'>
-                    <div className='p-4 bg-gray-700/30 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center'>
-                      <Store className='h-10 w-10 text-gray-500' />
-                    </div>
-                    <h4 className='text-lg font-semibold text-white mb-2'>No se encontraron tiendas</h4>
-                    <p className='text-gray-400 mb-4'>
-                      {searchTerm ? 'Intenta con otros términos de búsqueda' : 'Comienza creando tu primera tienda'}
-                    </p>
-                    {!searchTerm && (
-                      <button
-                        onClick={() => setShowCreateStore(true)}
-                        className='flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all duration-200 mx-auto'
-                      >
-                        <Plus className='h-4 w-4' />
-                        Crear Primera Tienda
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6'>
-                    {filteredStores.map(store => (
-                      <div key={store.id} className='bg-gradient-to-br from-gray-700/50 to-gray-800/50 rounded-2xl p-6 border border-gray-600/50 hover:border-blue-500/50 transition-all duration-200'>
-                        <div className='flex items-start justify-between mb-4'>
-                          <div className='flex items-center gap-3'>
-                            <div className='p-2 bg-blue-600/20 rounded-lg'>
-                              <Store className='h-5 w-5 text-blue-400' />
-                            </div>
-                            <div>
-                              <h3 className='font-semibold text-white text-lg'>{store.name}</h3>
-                              <div className='flex items-center gap-2 text-gray-400 text-sm mt-1'>
-                                <MapPin className='h-3 w-3' />
-                                <span>{store.address}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <div className='flex gap-1'>
-                            <button 
-                              onClick={() => handleEditStore(store.id)} 
-                              className='p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-600/20 rounded-lg transition-colors'
-                            >
-                              <Edit className='h-4 w-4' />
-                            </button>
-                            <button 
-                              onClick={() => handleDeleteStore(store.id)} 
-                              className='p-2 text-red-400 hover:text-red-300 hover:bg-red-600/20 rounded-lg transition-colors'
-                            >
-                              <Trash2 className='h-4 w-4' />
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className='grid grid-cols-3 gap-4 mb-4'>
-                          <div className='text-center'>
-                            <p className='text-gray-400 text-xs'>Productos</p>
-                            <p className='text-white font-semibold'>{store.products}</p>
-                          </div>
-                          <div className='text-center'>
-                            <p className='text-gray-400 text-xs'>Ventas</p>
-                            <p className='text-green-400 font-semibold'>${(store.sales / 1000).toFixed(0)}k</p>
-                          </div>
-                          <div className='text-center'>
-                            <p className='text-gray-400 text-xs'>Rating</p>
-                            <div className='flex items-center justify-center gap-1'>
-                              <Star className='h-3 w-3 text-yellow-400 fill-current' />
-                              <span className='text-white font-semibold'>{store.score}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <button className='w-full py-2 px-4 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-xl font-medium transition-all duration-200'>
-                          Gestionar Tienda
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <div className='flex items-center justify-between mb-6'>
+                  <h2 className='text-xl font-semibold text-white'>Mis Tiendas</h2>
+                </div>
+                <StoreGrid search={searchTerm} filterByOwner/>
               </div>
 
               {/* Modal para crear tienda */}

@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { X, Trash2, Plus, Minus, ShoppingCart, Receipt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useCartStore } from '@/store/CartStore';
+import { useCartStore, ItemProduct } from '@/store/CartStore';
+import { useMutation } from '@tanstack/react-query';
+import { createOrder } from '@/services/orders';
 
 interface CartDrawerProps {
   open: boolean;
@@ -24,6 +26,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
   const [sending, setSending] = useState(false);
   const setDeliveryType = (type: 'retiro_en_tienda' | 'delivery') => useCartStore.setState({ deliveryType: type });
   const getTotalItems = () => items.reduce((acc, i) => acc + i.quantity, 0);
+  const [receiptItems, setReceiptItems] = useState<ItemProduct[]>([]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-CL', {
@@ -32,20 +35,47 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
     }).format(price);
   };
 
+  const receiptTotal = receiptItems.reduce(
+    (acc, item) => acc + item.quantity * item.price,
+    0
+  );
+
   const handleBuy = () => {
+    setReceiptItems([...items]);
     setShowReceipt(true);
     setOrderSent(false);
   };
 
-  const handleSendOrder = async () => {
-    setSending(true);
-    setTimeout(() => {
-      setOrderSent(true);
-      clearCart();
-      setSending(false);
-    }, 1200);
+  const handleClose = () => {
+    setShowReceipt(false);
+    setOrderSent(false);
+    setSending(false);
+    onClose();
   };
-  
+
+  const handleSendOrder = () => {
+    try {
+      const payload = getOrderPayload();
+      setSending(true);
+      orderMutation.mutate(payload);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const orderMutation = useMutation({
+    mutationFn: createOrder,
+    onSuccess: () => {
+      setOrderSent(true);
+      setSending(false);
+      clearCart();
+    },
+    onError: () => {
+      console.error('Error al crear la orden:');
+      setSending(false);
+    }
+  });
+
   if (!open) return null;
 
   return (
@@ -53,7 +83,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
       {/* Overlay (cierra el Drawer al hacer click) */}
       <div 
         className="fixed inset-0 bg-black/50 z-40"
-        onClick={onClose}
+        onClick={handleClose}
       />
       {/* Drawer del carrito */}
       <div className="fixed bottom-20 right-6 w-80 bg-white rounded-lg shadow-2xl z-50 border border-gray-200">
@@ -70,7 +100,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             <Button
               variant="ghost"
               size="icon"
-              onClick={onClose}
+              onClick={handleClose}
               className="h-8 w-8"
             >
               <X className="h-4 w-4" />
@@ -177,7 +207,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
               variant="ghost"
               size="icon"
               className="absolute top-2 right-2"
-              onClick={onClose}
+              onClick={handleClose}
             >
               <X className="h-5 w-5" />
             </Button>
@@ -187,7 +217,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             </div>
             <div className="mb-4">
               <ul className="divide-y divide-gray-200">
-                {items.map(item => (
+                {receiptItems.map(item => (
                   <li key={item.productId} className="flex justify-between py-2 text-gray-700">
                     <span>{item.name} x{item.quantity}</span>
                     <span>{formatPrice(item.price * item.quantity)}</span>
@@ -196,48 +226,51 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
               </ul>
               <div className="flex justify-between mt-4 font-bold text-lg">
                 <span>Total:</span>
-                <span>{formatPrice(totalAmount())}</span>
+                <span>{formatPrice(receiptTotal)}</span>
               </div>
             </div>
             <div className="mb-4">
               <label className="block font-medium mb-2">Tipo de entrega:</label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="deliveryType"
-                    value="delivery"
-                    checked={deliveryType === 'delivery'}
-                    onChange={() => setDeliveryType('delivery')}
-                  />
-                  Envío (delivery)
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="deliveryType"
-                    value="retiro_en_tienda"
-                    checked={deliveryType === 'retiro_en_tienda'}
-                    onChange={() => setDeliveryType('retiro_en_tienda')}
-                  />
-                  Retiro en tienda
-                </label>
-              </div>
+              {orderSent ? (
+                <p className="text-gray-700 font-semibold">
+                  {deliveryType === 'delivery' ? 'Envío (delivery)' : 'Retiro en tienda'}
+                </p>
+              ) : (
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="deliveryType"
+                      value="delivery"
+                      checked={deliveryType === 'delivery'}
+                      onChange={() => setDeliveryType('delivery')}
+                    />
+                    Envío (delivery)
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="deliveryType"
+                      value="retiro_en_tienda"
+                      checked={deliveryType === 'retiro_en_tienda'}
+                      onChange={() => setDeliveryType('retiro_en_tienda')}
+                    />
+                    Retiro en tienda
+                  </label>
+                </div>
+              )}
             </div>
             <Button
               onClick={handleSendOrder}
               className="w-full bg-green-600 hover:bg-green-700 mb-2"
-              disabled={sending || orderSent}
+              disabled={sending || orderSent || orderMutation.isPending}
             >
-              {sending ? 'Enviando pedido...' : orderSent ? 'Pedido enviado' : 'Confirmar pedido'}
+              {orderMutation.isPending ? 'Enviando pedido...' : orderSent ? 'Pedido enviado' : 'Confirmar pedido'}
             </Button>
             {orderSent && (
               <div className="text-green-700 text-center font-semibold mt-2">
                 <span>¡Pedido enviado!</span><br/>
                 <span>Tipo de entrega: {deliveryType === 'delivery' ? 'Envío (delivery)' : 'Retiro en tienda'}</span>
-                <pre className="text-xs text-gray-500 mt-2 text-left bg-gray-100 p-2 rounded">
-                  {JSON.stringify(getOrderPayload(), null, 2)}
-                </pre>
               </div>
             )}
           </div>

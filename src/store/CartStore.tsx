@@ -10,7 +10,7 @@ export type ItemProduct = {
   img?: string;
 };
 
-type OrderDto = {
+export type OrderDto = {
   storeId: number;
   clientId: number;
   deliveryType: 'retiro_en_tienda' | 'delivery';

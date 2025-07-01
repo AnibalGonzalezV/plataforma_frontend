@@ -22,7 +22,6 @@ const AdminHome = lazy(() => import('@/components/adminComponents/AdminHome'));
 const UserManagement = lazy(() => import('@/components/adminComponents/UsersManage/UserManagement'));
 const AdminDashboard = lazy(() => import('@/components/adminComponents/AdminDashboard'));
 
-const VendorHome = lazy(() => import('@/components/vendorsComponents/VendorHome'));
 const VendorDashboard = lazy(() => import('@/components/vendorsComponents/VendorDashboard'));
 const VendorProducts = lazy(() => import('@/components/vendorsComponents/StoreComponents/StoreProducts'));
 const VendorStoreView = lazy(() => import('@/components/vendorsComponents/VendorStoreView'));
@@ -49,10 +48,9 @@ export default function AppRouter () {
                         <Route path='/perfil' element={<UserProfile/>}/>
                     </Route>
                     <Route element={<RoleProtectedRoute allowedRoles={['vendedor']}/>}>
-                        <Route path='/vendor' element={<VendorHome/>}/>
+                        <Route path='/vendor/managment' element={<VendorManagement/>} />
                         <Route path='/vendor/dashboard' element={<VendorDashboard/>}/>
                         <Route path='/vendor/:storeId' element={<VendorStoreView />} />
-                        <Route path='/vendor/managment' element={<VendorManagement/>} />
                         <Route path='/vendor/pedidos' element={<VendorOrdersList/>}/>
                     </Route>
                     <Route element={<RoleProtectedRoute allowedRoles={['repartidor']}/>}>
