@@ -24,6 +24,8 @@ export interface DashboardStats {
     total: number;
     averageTicket: number;
   };
+  // topProducts?: TopProduct[];
+  // topStores?: TopStore[];
 }
 
 export interface TopProduct {
@@ -202,23 +204,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     const totalSales = allOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
     const averageTicket = allOrders.length > 0 ? totalSales / allOrders.length : 0;
 
-    // Calcular top productos (simulado basado en productos existentes)
-    const topProducts: TopProduct[] = allProducts.slice(0, 5).map((product, index) => ({
-      id: product.id,
-      name: product.name,
-      sales: Math.floor(Math.random() * 50) + 10, // Simulado
-      revenue: Math.floor(Math.random() * 100000) + 10000, // Simulado
-    }));
-
-    // Calcular top tiendas (simulado basado en tiendas existentes)
-    const topStores: TopStore[] = allStores.slice(0, 5).map((store, index) => ({
-      id: store.id,
-      name: store.name,
-      sales: Math.floor(Math.random() * 1000000) + 100000, // Simulado
-      orders: Math.floor(Math.random() * 100) + 10, // Simulado
-      rating: (Math.random() * 2 + 3).toFixed(1), // Simulado entre 3-5
-    }));
-
     return {
       users: {
         total: allUsers.length,
@@ -241,6 +226,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         total: totalSales,
         averageTicket: averageTicket,
       },
+      // topProducts: null,
+      // topStores: null,
     };
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
@@ -264,9 +251,9 @@ export async function getChartData() {
     }));
 
     return {
-      salesByMonth,
+      salesByMonth: [], // No datos simulados
       ordersByState,
-      recentOrders: allOrders.slice(0, 10), // Últimos 10 pedidos
+      recentOrders: allOrders.slice(0, 10), // Últimos 10 pedidos reales
     };
   } catch (error) {
     console.error('Error fetching chart data:', error);
