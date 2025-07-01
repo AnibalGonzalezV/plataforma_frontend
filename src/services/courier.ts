@@ -1,125 +1,190 @@
-/**
- * @typedef {Object} Order
- * @property {number} order_id - ID del pedido
- * @property {string} client_name - Nombre del cliente
- * @property {string} client_address - Dirección del cliente
- * @property {string} store_name - Nombre de la tienda
- * @property {string[]} items - Lista de items del pedido
- * @property {number} total_amount - Monto total del pedido
- * @property {string} order_date - Fecha del pedido
- * @property {"pendiente"|"en_proceso"|"entregado"} delivery_state - Estado del pedido
- */
+"use client"
 
-// Definición de tipos directamente en el archivo de servicios
+// Tipo que devuelve el backend (exactamente como está en la entidad)
+export interface BackendOrder {
+  id: number
+  storeId: number
+  clientId: number
+  courierId: number | null
+  deliveryType: string
+  deliveryState: string
+  totalAmount: number
+  orderDate: string
+}
+
+// Tipo que usa el frontend (simplificado)
 export interface Order {
   order_id: number
-  client_name: string
-  client_address: string
-  store_name: string
-  items: string[]
+  store_id: number
+  client_id: number
+  courier_id: number | null
+  delivery_type: string
+  delivery_state: "pendiente" | "en_proceso" | "entregado"
   total_amount: number
   order_date: string
-  delivery_state: "pendiente" | "en_proceso" | "entregado"
+}
+
+// Tipo para items del pedido
+export interface OrderItem {
+  orderId: number
+  productId: number
+  quantity: number
 }
 
 /**
- * Obtiene el ID del repartidor actual
- * @returns {Promise<number>} ID del repartidor
+ * Convierte un pedido del backend al formato del frontend
  */
-export async function getCurrentCourierId() {
-  return 1 // ID del repartidor actual
+function convertBackendOrderToFrontendOrder(backendOrder: BackendOrder): Order {
+  return {
+    order_id: backendOrder.id,
+    store_id: backendOrder.storeId,
+    client_id: backendOrder.clientId,
+    courier_id: backendOrder.courierId,
+    delivery_type: backendOrder.deliveryType,
+    delivery_state: backendOrder.deliveryState as "pendiente" | "en_proceso" | "entregado",
+    total_amount: backendOrder.totalAmount,
+    order_date: backendOrder.orderDate,
+  }
 }
 
 /**
- * Obtiene los pedidos pendientes
- * @returns {Promise<Order[]>} Lista de pedidos pendientes
+ * Obtiene los pedidos pendientes (nuevos pedidos)
  */
-export async function fetchPendingOrders() {
-  // Simula una llamada API para obtener pedidos pendientes
-  return [
-    {
-      order_id: 1,
-      client_name: "Ana García",
-      client_address: "Avenida Central 45, Piso 2B",
-      store_name: "Restaurante El Buen Sabor",
-      items: ["1x Pizza Margarita", "2x Refresco Cola"],
-      total_amount: 25000,
-      order_date: new Date().toISOString(),
-      delivery_state: "pendiente",
+export async function fetchPendingOrders(): Promise<Order[]> {
+  const res = await fetch("http://localhost:3003/orders/orders/new-orders", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
     },
-    {
-      order_id: 2,
-      client_name: "Carlos Rodríguez",
-      client_address: "Avenida Central 45, Local 3",
-      store_name: "Burger House",
-      items: ["1x Hamburguesa Completa", "1x Patatas Fritas", "1x Batido de Chocolate"],
-      total_amount: 35000,
-      order_date: new Date().toISOString(),
-      delivery_state: "pendiente",
-    },
-  ]
+  })
+
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.message || "Error al obtener los pedidos pendientes")
+  }
+
+  const backendOrders: BackendOrder[] = await res.json()
+  return backendOrders.map(convertBackendOrderToFrontendOrder)
 }
 
+/**
+ * Obtiene todos los pedidos
+ */
+export async function fetchAllOrders(): Promise<Order[]> {
+  const res = await fetch("http://localhost:3003/orders/orders/all", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.message || "Error al obtener todos los pedidos")
+  }
+
+  const backendOrders: BackendOrder[] = await res.json()
+  return backendOrders.map(convertBackendOrderToFrontendOrder)
+}
+
+/**
+ * Obtiene los pedidos activos de un repartidor
+ */
 export async function fetchActiveOrders(courierId: number): Promise<Order[]> {
-  // Simula una llamada API para obtener pedidos activos del repartidor
-  return [
-    {
-      order_id: 3,
-      client_name: "Juan Martínez",
-      client_address: "Calle Secundaria 78, Casa 12",
-      store_name: "Sushi Express",
-      items: ["3x Tacos de Pollo", "1x Nachos con Queso", "2x Refresco de Limón"],
-      total_amount: 40000,
-      order_date: new Date().toISOString(),
-      delivery_state: "en_proceso",
-    },
-    {
-      order_id: 4,
-      client_name: "Laura Sánchez",
-      client_address: "Avenida del Parque 23, Piso 5A",
-      store_name: "Sushi Master",
-      items: ["1x Sushi Variado (12 piezas)", "1x Ensalada de Algas", "2x Té Verde"],
-      total_amount: 50000,
-      order_date: new Date().toISOString(),
-      delivery_state: "en_proceso",
-    },
-  ]
+  const allOrders = await fetchAllOrders()
+  return allOrders.filter((order) => order.delivery_state === "en_proceso" && order.courier_id === courierId)
 }
 
+/**
+ * Obtiene los pedidos entregados de un repartidor
+ */
 export async function fetchDeliveredOrders(courierId: number): Promise<Order[]> {
-  // Simula una llamada API para obtener pedidos entregados por el repartidor
-  return [
-    {
-      order_id: 5,
-      client_name: "Pedro Gómez",
-      client_address: "Calle del Sol 34, Bajo C",
-      store_name: "Cafetería Central",
-      items: ["2x Bocadillo Mixto", "2x Zumo de Naranja"],
-      total_amount: 18000,
-      order_date: new Date(Date.now() - 3600000).toISOString(), // 1 hora antes
-      delivery_state: "entregado",
-    },
-    {
-      order_id: 6,
-      client_name: "Sofía Fernández",
-      client_address: "Avenida Principal 56, Piso 3D",
-      store_name: "Restaurante Mediterráneo",
-      items: ["1x Paella Mixta (2 personas)", "1x Botella de Vino Tinto"],
-      total_amount: 45000,
-      order_date: new Date(Date.now() - 7200000).toISOString(), // 2 horas antes
-      delivery_state: "entregado",
-    },
-  ]
+  const allOrders = await fetchAllOrders()
+  return allOrders.filter((order) => order.delivery_state === "entregado" && order.courier_id === courierId)
 }
 
+/**
+ * Obtiene los items de un pedido
+ */
+export async function getOrderItems(orderId: number): Promise<OrderItem[]> {
+  const res = await fetch(`http://localhost:3003/orders/orders/${orderId}/items`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+  
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.message || "Error al obtener los items del pedido")
+  }
+  
+  return await res.json()
+}
+
+/**
+ * Acepta un pedido (asigna al repartidor)
+ */
 export async function acceptOrder(orderId: number, courierId: number): Promise<boolean> {
-  // Simula una llamada API para aceptar un pedido
-  console.log(`Pedido ${orderId} aceptado por el repartidor ${courierId}`)
+  const res = await fetch(`http://localhost:3003/orders/orders/assign/${orderId}/${courierId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.message || "Error al aceptar el pedido")
+  }
+
   return true
 }
 
+/**
+ * Marca un pedido como entregado
+ */
 export async function completeOrder(orderId: number): Promise<boolean> {
-  // Simula una llamada API para marcar un pedido como entregado
-  console.log(`Pedido ${orderId} marcado como entregado`)
+  const res = await fetch(`http://localhost:3003/orders/orders/${orderId}/mark-delivered`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.message || "Error al completar el pedido")
+  }
+
   return true
+}
+
+/**
+ * Obtiene el ID del repartidor actual (temporal)
+ */
+export async function getCurrentCourierId(): Promise<number> {
+  return 1 // Esto debería venir de la autenticación
+}
+
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("es-CL", {
+    style: "currency",
+    currency: "CLP",
+  }).format(amount)
+}
+
+export async function checkApiConnection(): Promise<boolean> {
+  try {
+    const res = await fetch("http://localhost:3003/orders/orders/new-orders", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    return res.ok
+  } catch (error) {
+    console.error("error", error)
+    return false
+  }
 }

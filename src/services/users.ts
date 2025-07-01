@@ -43,7 +43,7 @@ export async function userList(): Promise<UserResponse> {
 }
 
 export async function roleList(): Promise<Role[]> {
-  const res = await fetch('http://localhost:3002/roles/all', {
+  const res = await fetch('http://localhost:3003/users/roles/all', {
     method: 'GET',
   });
 
@@ -56,7 +56,7 @@ export async function roleList(): Promise<Role[]> {
 }
 
 export async function updateUserRoles(userId: number, roleIds: number[]): Promise<void> {
-  const res = await fetch(`http://localhost:3002/usuarios/${userId}/roles`, {
+  const res = await fetch(`http://localhost:3003/users/usuarios/${userId}/roles`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -69,3 +69,19 @@ export async function updateUserRoles(userId: number, roleIds: number[]): Promis
     throw new Error(error.message || 'Failed to update roles');
   }
 }
+
+export async function statusUser(userId: number, option: string) {
+  const token = localStorage.getItem('accessToken');
+  const res = await fetch(`http://localhost:3003/usuarios/${userId}/${option}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || 'Failed to update user state');
+  }
+}
+

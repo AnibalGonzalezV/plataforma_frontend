@@ -1,93 +1,84 @@
 import { useEffect, useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Role, UserData, roleList, updateUserRoles } from '@/services/users';
 
-export function EditUserRoles({ user, onClose }: UserData) {
-  const [roles, setRoles] = useState<Role[]>([]);
-  const [selectedRoles, setSelectedRoles] = useState<number[]>([]);
-  const [loading, setLoading] = useState(false);
+export default function EditUserRoles({ user, onClose }: UserData) {
+  const queryClient = useQueryClient();
+  const { data: roles = [], isLoading: loadingRoles } = useQuery<Role[]>({
+    queryKey: ['roles'],
+    queryFn: roleList
+  });
+
+  const userRoleIds = roles
+    .filter(role => role.users.includes(user.id))
+    .map(role => role.id);
+
+  const [selectedRoles, setSelectedRoles] = useState<number[]>(userRoleIds);
 
   useEffect(() => {
-    async function loadRoles() {
-      try {
-        const data = await roleList();
-        setRoles(data);
+    setSelectedRoles(userRoleIds);
+  }, [roles, user.id]);
 
-        const userRoleIds = data
-          .filter((role: Role) => role.users.includes(user.id))
-          .map((role: Role) => role.id);
-
-        setSelectedRoles(userRoleIds);
-      } catch (err) {
-        console.error('Error cargando: roles');
-      }
+  const mutation = useMutation({
+    mutationFn: () => updateUserRoles(user.id, selectedRoles),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      onClose();
+    },
+    onError: () => {
+      alert('Error al guardar roles.');
     }
-
-    loadRoles();
-  }, [user.id]);
+  });
 
   const toggleRole = (roleId: number) => {
     setSelectedRoles(prev =>
-      prev.includes(roleId)
-        ? prev.filter(id => id !== roleId)
-        : [...prev, roleId]
+      prev.includes(roleId) ? prev.filter(id => id !== roleId) : [...prev, roleId]
     );
   };
 
-  const saveChanges = async () => {
-    try {
-      setLoading(true);
-      await updateUserRoles(user.id, selectedRoles);
-      onClose();
-    } catch (error) {
-      console.error('Error updating roles:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-        <h2 className="text-xl font-bold mb-2">Edit User Roles</h2>
-        <p className="text-sm text-black mb-2">
-            <span className="font-semibold">Nombre:</span> {user.names} {user.lastNames}
-        </p>
-        <p className="text-sm text-black mb-2">
-            <span className="font-semibold">Email:</span> {user.email}
-        </p>
-        <p className="text-sm text-black mb-2">
-            <span className="font-semibold">Dirección:</span> {user.address}
-        </p>
-
-        <div className="mb-4">
-          <h3 className="font-semibold text-sm mb-2">Roles:</h3>
-          {roles.map(role => (
-            <label key={role.id} className="block text-sm text-black mb-1">
-              <input
-                type="checkbox"
-                checked={selectedRoles.includes(role.id)}
-                onChange={() => toggleRole(role.id)}
-                className="mr-2"
-              />
-              {role.name}
-            </label>
-          ))}
+    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm'>
+      <div className='bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg p-8 border border-gray-700/40'>
+        <h2 className='text-2xl font-bold mb-6 text-white text-center'>Editar Roles de Usuario</h2>
+        <div className='mb-6'>
+          <p className='text-base text-gray-200 mb-1'><span className='font-semibold'>Nombre:</span> {user.names} {user.lastNames}</p>
+          <p className='text-base text-gray-200 mb-1'><span className='font-semibold'>Email:</span> {user.email}</p>
+          <p className='text-base text-gray-200'><span className='font-semibold'>Dirección:</span> {user.address}</p>
         </div>
-
-        <div className="flex justify-end space-x-2 mt-6">
+        <div className='mb-8'>
+          <h3 className='font-semibold text-base mb-3 text-white'>Roles:</h3>
+          {loadingRoles ? (
+            <p className='text-sm text-gray-400'>Cargando roles...</p>
+          ) : (
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-2'>
+              {roles.map(role => (
+                <label key={role.id} className='flex items-center gap-2 text-gray-200 bg-gray-800 rounded-lg px-3 py-2 cursor-pointer hover:bg-gray-700 transition-all'>
+                  <input
+                    type='checkbox'
+                    checked={selectedRoles.includes(role.id)}
+                    onChange={() => toggleRole(role.id)}
+                    className='accent-blue-600 h-4 w-4 rounded'
+                  />
+                  {role.name}
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className='flex justify-end gap-3 mt-8'>
           <button
-            className="px-4 py-2 text-red-600 border border-red-600 rounded hover:bg-red-600 hover:text-white"
+            className='px-6 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white font-medium transition-all duration-200'
             onClick={onClose}
-            disabled={loading}
+            disabled={mutation.isPending}
           >
-            Cancel
+            Cancelar
           </button>
           <button
-            className="px-4 py-2 bg-slate-800 text-white rounded hover:bg-slate-700"
-            onClick={saveChanges}
-            disabled={loading}
+            className='px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-200 shadow-lg'
+            onClick={() => mutation.mutate()}
+            disabled={mutation.isPending}
           >
-            {loading ? 'Saving...' : 'Save'}
+            {mutation.isPending ? 'Guardando...' : 'Guardar'}
           </button>
         </div>
       </div>

@@ -1,9 +1,9 @@
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Clock, MapPin, Package, Store, User } from "lucide-react"
-import { formatCurrency } from "@/lib/utils"
-import { Order } from "@/services/courier"
+import { formatCurrency, getOrderItems, OrderItem, Order } from "@/services/courier"
 
 type CourierOrderCardProps = {
   order: Order
@@ -11,10 +11,25 @@ type CourierOrderCardProps = {
   onComplete?: (orderId: number) => void
 }
 
-
 export function CourierOrderCard({ order, onAccept, onComplete }: CourierOrderCardProps) {
   // Formatear la fecha del pedido
   const formattedDate = new Date(order.order_date).toLocaleString()
+  const [items, setItems] = useState<OrderItem[]>([])
+  const [loadingItems, setLoadingItems] = useState(true)
+
+  useEffect(() => {
+    async function loadItems() {
+      try {
+        const res = await getOrderItems(order.order_id)
+        setItems(res)
+      } catch {
+        setItems([])
+      } finally {
+        setLoadingItems(false)
+      }
+    }
+    loadItems()
+  }, [order.order_id])
 
   // Determinar el estado del pedido para mostrar el badge correcto
   const getStatusBadge = () => {
@@ -56,27 +71,31 @@ export function CourierOrderCard({ order, onAccept, onComplete }: CourierOrderCa
       <CardContent>
         <div className="mb-2 flex items-start gap-2">
           <User className="mt-0.5 h-4 w-4 text-muted-foreground" />
-          <span>{order.client_name}</span>
+          <span>Cliente #{order.client_id}</span>
         </div>
 
         <div className="mb-2 flex items-start gap-2">
           <MapPin className="mt-0.5 h-4 w-4 text-muted-foreground" />
-          <span>{order.client_address}</span>
+          <span>Dirección no disponible</span>
         </div>
 
         <div className="mb-2 flex items-start gap-2">
           <Store className="mt-0.5 h-4 w-4 text-muted-foreground" />
-          <span>{order.store_name}</span>
+          <span>Tienda #{order.store_id}</span>
         </div>
 
         <div className="flex items-start gap-2">
           <Package className="mt-0.5 h-4 w-4 text-muted-foreground" />
           <div>
-            {order.items.map((item, index) => (
-              <div key={index} className="text-sm">
-                {item}
-              </div>
-            ))}
+            {loadingItems ? (
+              <div className="text-sm">Cargando productos...</div>
+            ) : items.length > 0 ? (
+              items.map((item, idx) => (
+                <div key={idx} className="text-sm">{item.quantity}x Producto #{item.productId}</div>
+              ))
+            ) : (
+              <div className="text-sm">Productos no disponibles</div>
+            )}
             <div className="mt-2 font-semibold">Total: {formatCurrency(order.total_amount)}</div>
           </div>
         </div>
