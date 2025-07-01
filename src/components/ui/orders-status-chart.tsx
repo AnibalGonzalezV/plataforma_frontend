@@ -8,7 +8,8 @@ interface OrdersStatusChartProps {
 }
 
 const getStateColor = (state: string) => {
-  switch (state.toLowerCase()) {
+  const key = state?.toLowerCase() ?? 'desconocido';
+  switch (key) {
     case 'nuevo':
       return 'bg-blue-600/20 text-blue-400';
     case 'en_proceso':
@@ -33,7 +34,9 @@ export function OrdersStatusChart({ data }: OrdersStatusChartProps) {
         <div key={index} className="flex items-center justify-between p-3 bg-gray-700/30 rounded-lg hover:bg-gray-700/50 transition-colors">
           <div className="flex items-center gap-3">
             <div className={`w-3 h-3 rounded-full ${getStateColor(item.state)}`}></div>
-            <span className="text-white text-sm capitalize">{item.state.replace('_', ' ')}</span>
+            <span className="text-white text-sm capitalize">
+              {item.state ? item.state.replace('_', ' ') : 'Sin estado'}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-purple-400 font-semibold">{item.count}</span>

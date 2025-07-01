@@ -8,6 +8,8 @@ import Header from '@/components/Header';
 export default function AdminDashboard() {
   // Obtener datos del dashboard usando el hook personalizado
   const { stats, charts: chartData, isLoading, error } = useDashboard();
+  const totalSales = Number(stats?.sales.total) || 0;
+  const displaySales = totalSales >= 1000 ? (totalSales / 1000).toFixed(0) + 'k' : totalSales.toString();
 
   if (isLoading) {
     return (
@@ -77,7 +79,7 @@ export default function AdminDashboard() {
                 </div>
                 <p className="text-gray-600 text-sm font-medium">Ventas</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  ${stats?.sales.total ? (stats.sales.total / 1000).toFixed(0) + 'k' : '0'}
+                  ${displaySales}
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
                   ${stats?.sales.averageTicket ? stats.sales.averageTicket.toFixed(0) : '0'} promedio
