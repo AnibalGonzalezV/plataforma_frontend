@@ -263,28 +263,34 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             </div>
             <div className="mb-4">
               <label className="block font-medium mb-2">Método de pago</label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="saldo"
-                    checked={paymentMethod === 'saldo'}
-                    onChange={() => setPaymentMethod('saldo')}
-                  />
-                  <CreditCard className="h-5 w-5 text-blue-400" /> Saldo interno
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="transferencia"
-                    checked={paymentMethod === 'transferencia'}
-                    onChange={() => setPaymentMethod('transferencia')}
-                  />
-                  <Banknote className="h-5 w-5 text-green-400" /> Transferencia
-                </label>
-              </div>
+              {orderSent ? (
+                <p className="text-gray-700 font-semibold">
+                  {paymentMethod === 'saldo' ? 'Saldo interno' : 'Transferencia'}
+                </p>
+              ) : (
+                <div className="flex gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="saldo"
+                      checked={paymentMethod === 'saldo'}
+                      onChange={() => setPaymentMethod('saldo')}
+                    />
+                    <CreditCard className="h-5 w-5 text-blue-400" /> Saldo interno
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="transferencia"
+                      checked={paymentMethod === 'transferencia'}
+                      onChange={() => setPaymentMethod('transferencia')}
+                    />
+                    <Banknote className="h-5 w-5 text-green-400" /> Transferencia
+                  </label>
+                </div>
+              )}
             </div>
             <Button
               onClick={handleSendOrder}
