@@ -1,5 +1,4 @@
 // Servicios para el dashboard del administrador
-const API_BASE_URL = 'http://localhost:3003';
 
 // Tipos para las métricas del dashboard
 export interface DashboardStats {
@@ -24,8 +23,6 @@ export interface DashboardStats {
     total: number;
     averageTicket: number;
   };
-  // topProducts?: TopProduct[];
-  // topStores?: TopStore[];
 }
 
 export interface TopProduct {
@@ -55,14 +52,12 @@ const getAuthHeaders = () => {
 // Obtener estadísticas de usuarios por rol
 export async function getUsersCountByRole(): Promise<{ role: string; count: number }[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/metrics/count-by-role`, {
+    const response = await fetch('http://localhost:3003/metrics/metrics/count-by-role', {
       headers: getAuthHeaders(),
     });
-    
     if (!response.ok) {
       throw new Error('Error al obtener estadísticas de usuarios');
     }
-    
     return await response.json();
   } catch (error) {
     console.error('Error fetching users count by role:', error);
@@ -73,14 +68,12 @@ export async function getUsersCountByRole(): Promise<{ role: string; count: numb
 // Obtener todos los usuarios
 export async function getAllUsers(): Promise<any[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/users/usuarios/all`, {
+    const response = await fetch('http://localhost:3003/users/usuarios/all', {
       headers: getAuthHeaders(),
     });
-    
     if (!response.ok) {
       throw new Error('Error al obtener usuarios');
     }
-    
     return await response.json();
   } catch (error) {
     console.error('Error fetching all users:', error);
@@ -91,14 +84,12 @@ export async function getAllUsers(): Promise<any[]> {
 // Obtener estadísticas de pedidos por estado
 export async function getOrdersByState(): Promise<{ state: string; count: number }[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/orders/state-count`, {
+    const response = await fetch('http://localhost:3003/orders/orders/state-count', {
       headers: getAuthHeaders(),
     });
-    
     if (!response.ok) {
       throw new Error('Error al obtener estadísticas de pedidos');
     }
-    
     return await response.json();
   } catch (error) {
     console.error('Error fetching orders by state:', error);
@@ -109,14 +100,12 @@ export async function getOrdersByState(): Promise<{ state: string; count: number
 // Obtener todos los pedidos
 export async function getAllOrders(): Promise<any[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/orders/all`, {
+    const response = await fetch('http://localhost:3003/orders/orders/all', {
       headers: getAuthHeaders(),
     });
-    
     if (!response.ok) {
       throw new Error('Error al obtener pedidos');
     }
-    
     return await response.json();
   } catch (error) {
     console.error('Error fetching all orders:', error);
@@ -127,14 +116,12 @@ export async function getAllOrders(): Promise<any[]> {
 // Obtener todas las tiendas
 export async function getAllStores(): Promise<any[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/users/stores/all`, {
+    const response = await fetch('http://localhost:3003/users/stores/all', {
       headers: getAuthHeaders(),
     });
-    
     if (!response.ok) {
       throw new Error('Error al obtener tiendas');
     }
-    
     return await response.json();
   } catch (error) {
     console.error('Error fetching all stores:', error);
@@ -145,14 +132,12 @@ export async function getAllStores(): Promise<any[]> {
 // Obtener todos los productos
 export async function getAllProducts(): Promise<any[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/products/all`, {
+    const response = await fetch('http://localhost:3003/products/products/all', {
       headers: getAuthHeaders(),
     });
-    
     if (!response.ok) {
       throw new Error('Error al obtener productos');
     }
-    
     return await response.json();
   } catch (error) {
     console.error('Error fetching all products:', error);
@@ -163,14 +148,12 @@ export async function getAllProducts(): Promise<any[]> {
 // Obtener todos los repartidores
 export async function getAllCouriers(): Promise<any[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/users/couriers/all`, {
+    const response = await fetch('http://localhost:3003/users/couriers/all', {
       headers: getAuthHeaders(),
     });
-    
     if (!response.ok) {
       throw new Error('Error al obtener repartidores');
     }
-    
     return await response.json();
   } catch (error) {
     console.error('Error fetching all couriers:', error);
@@ -226,8 +209,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
         total: totalSales,
         averageTicket: averageTicket,
       },
-      // topProducts: null,
-      // topStores: null,
     };
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
@@ -242,13 +223,6 @@ export async function getChartData() {
       getOrdersByState(),
       getAllOrders()
     ]);
-
-    // Simular datos de ventas por mes (últimos 6 meses)
-    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'];
-    const salesByMonth = months.map((month, index) => ({
-      month,
-      sales: Math.floor(Math.random() * 100000) + 50000, // Simulado
-    }));
 
     return {
       salesByMonth: [], // No datos simulados
