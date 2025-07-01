@@ -1,115 +1,178 @@
-import { Users, Store, ShoppingCart, Package, Truck, BarChart3, PieChart, DollarSign, Star } from 'lucide-react';
+import { Users, Store, ShoppingCart, DollarSign, TrendingUp, Activity } from 'lucide-react';
+import { useDashboard } from '@/hooks/useDashboard';
+import { SalesChart } from '@/components/ui/sales-chart';
+import { OrdersStatusChart } from '@/components/ui/orders-status-chart';
+import SideBar from '@/components/SideBar';
+import Header from '@/components/Header';
 
 export default function AdminDashboard() {
-  // TODO: Obtener los datos reales desde la API o props
-  // const stats = useAdminStats();
-  // const salesByMonth = ...
-  // const ordersByStatus = ...
-  // const topProducts = ...
-  // const topStores = ...
+  // Obtener datos del dashboard usando el hook personalizado
+  const { stats, charts: chartData, isLoading, error } = useDashboard();
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen bg-gray-50">
+        <SideBar />
+        <div className="flex-1 flex flex-col">
+          <Header />
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-gray-600 text-lg">Cargando dashboard...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen bg-gray-50">
+        <SideBar />
+        <div className="flex-1 flex flex-col">
+          <Header />
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-red-500 text-lg">Error al cargar el dashboard</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
-      <div className="flex-1 max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
-          <BarChart3 className="h-8 w-8 text-blue-400" /> Dashboard administrador
-        </h1>
-        {/* KPIs principales */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Reemplaza los valores por datos reales */}
-          <div className="bg-gradient-to-br from-blue-600/20 to-blue-800/20 rounded-2xl p-6 border border-blue-600/30 flex items-center gap-4">
-            <Users className="h-10 w-10 text-blue-400" />
-            <div>
-              <p className="text-blue-300 text-sm font-medium">Usuarios</p>
-              <p className="text-2xl font-bold text-white">{/* {stats.users} */}</p>
-              <p className="text-xs text-gray-400">Activos hoy: {/* {stats.activeUsers} */}</p>
+    <div className="flex min-h-screen bg-gray-50">
+      <SideBar />
+      <div className="flex-1 flex flex-col">
+        <Header />
+        <div className="flex-1 p-8">
+          <div className="max-w-6xl mx-auto">
+            {/* Header Minimalista */}
+            <div className="mb-8">
+              <h1 className="text-2xl font-semibold text-gray-900 mb-2">Dashboard</h1>
+              <p className="text-gray-600">Resumen general del sistema</p>
             </div>
-          </div>
-          <div className="bg-gradient-to-br from-green-600/20 to-green-800/20 rounded-2xl p-6 border border-green-600/30 flex items-center gap-4">
-            <DollarSign className="h-10 w-10 text-green-400" />
-            <div>
-              <p className="text-green-300 text-sm font-medium">Ventas totales</p>
-              <p className="text-2xl font-bold text-white">{/* ${stats.sales} */}</p>
-              <p className="text-xs text-gray-400">Ticket promedio: {/* ${stats.avgTicket} */}</p>
+            
+            {/* KPIs Principales - Solo 4 métricas clave */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {/* Usuarios */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="p-2 bg-blue-50 rounded-lg">
+                    <Users className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <TrendingUp className="h-4 w-4 text-green-500" />
+                </div>
+                <p className="text-gray-600 text-sm font-medium">Usuarios</p>
+                <p className="text-2xl font-bold text-gray-900">{stats?.users.total || 0}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {stats?.users.byRole.find(r => r.role === 'comprador')?.count || 0} activos
+                </p>
+              </div>
+              
+              {/* Ventas */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="p-2 bg-green-50 rounded-lg">
+                    <DollarSign className="h-5 w-5 text-green-600" />
+                  </div>
+                  <TrendingUp className="h-4 w-4 text-green-500" />
+                </div>
+                <p className="text-gray-600 text-sm font-medium">Ventas</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  ${stats?.sales.total ? (stats.sales.total / 1000).toFixed(0) + 'k' : '0'}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  ${stats?.sales.averageTicket ? stats.sales.averageTicket.toFixed(0) : '0'} promedio
+                </p>
+              </div>
+              
+              {/* Pedidos */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="p-2 bg-purple-50 rounded-lg">
+                    <ShoppingCart className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <Activity className="h-4 w-4 text-blue-500" />
+                </div>
+                <p className="text-gray-600 text-sm font-medium">Pedidos</p>
+                <p className="text-2xl font-bold text-gray-900">{stats?.orders.total || 0}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {stats?.orders.byState.find(s => s.state === 'nuevo')?.count || 0} nuevos
+                </p>
+              </div>
+              
+              {/* Tiendas */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="p-2 bg-orange-50 rounded-lg">
+                    <Store className="h-5 w-5 text-orange-600" />
+                  </div>
+                  <TrendingUp className="h-4 w-4 text-green-500" />
+                </div>
+                <p className="text-gray-600 text-sm font-medium">Tiendas</p>
+                <p className="text-2xl font-bold text-gray-900">{stats?.stores.total || 0}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {stats?.products.total || 0} productos
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="bg-gradient-to-br from-purple-600/20 to-purple-800/20 rounded-2xl p-6 border border-purple-600/30 flex items-center gap-4">
-            <ShoppingCart className="h-10 w-10 text-purple-400" />
-            <div>
-              <p className="text-purple-300 text-sm font-medium">Pedidos</p>
-              <p className="text-2xl font-bold text-white">{/* {stats.orders} */}</p>
+
+            {/* Gráficos - Layout más limpio */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+              {/* Ventas por mes */}
+              <div className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-2 mb-6">
+                  <div className="p-1.5 bg-blue-50 rounded-lg">
+                    <TrendingUp className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <h2 className="text-lg font-semibold text-gray-900">Ventas mensuales</h2>
+                </div>
+                <SalesChart data={chartData?.salesByMonth || []} />
+              </div>
+              
+              {/* Pedidos por estado */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-2 mb-6">
+                  <div className="p-1.5 bg-purple-50 rounded-lg">
+                    <Activity className="h-4 w-4 text-purple-600" />
+                  </div>
+                  <h2 className="text-lg font-semibold text-gray-900">Estado de pedidos</h2>
+                </div>
+                <OrdersStatusChart data={chartData?.ordersByState || []} />
+              </div>
             </div>
-          </div>
-          <div className="bg-gradient-to-br from-yellow-600/20 to-yellow-800/20 rounded-2xl p-6 border border-yellow-600/30 flex items-center gap-4">
-            <Store className="h-10 w-10 text-yellow-400" />
-            <div>
-              <p className="text-yellow-300 text-sm font-medium">Tiendas</p>
-              <p className="text-2xl font-bold text-white">{/* {stats.stores} */}</p>
-            </div>
-          </div>
-        </div>
-        {/* Gráficos */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Ventas por mes */}
-          <div className="lg:col-span-2 bg-gray-800/50 rounded-2xl p-6 border border-gray-700/50">
-            <div className="flex items-center gap-2 mb-4">
-              <BarChart3 className="h-5 w-5 text-blue-400" />
-              <h2 className="text-lg font-semibold text-white">Ventas por mes</h2>
-            </div>
-            {/* Aquí va el gráfico de barras con los datos reales */}
-            {/* Ejemplo: salesByMonth.map(...) */}
-            <div className="h-64 flex items-center justify-center text-gray-500">Gráfico de ventas</div>
-          </div>
-          {/* Pedidos por estado */}
-          <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700/50">
-            <div className="flex items-center gap-2 mb-4">
-              <PieChart className="h-5 w-5 text-purple-400" />
-              <h2 className="text-lg font-semibold text-white">Pedidos por estado</h2>
-            </div>
-            {/* Aquí va el gráfico de pastel o lista de estados */}
-            <div className="flex flex-col gap-3 text-gray-500 items-center justify-center h-64">Gráfico de estados</div>
-          </div>
-        </div>
-        {/* Top productos y tiendas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700/50">
-            <div className="flex items-center gap-2 mb-4">
-              <Package className="h-5 w-5 text-green-400" />
-              <h2 className="text-lg font-semibold text-white">Top productos</h2>
-            </div>
-            {/* Aquí va la lista de top productos */}
-            <div className="text-gray-500 text-center">Lista de productos</div>
-          </div>
-          <div className="bg-gray-800/50 rounded-2xl p-6 border border-gray-700/50">
-            <div className="flex items-center gap-2 mb-4">
-              <Store className="h-5 w-5 text-yellow-400" />
-              <h2 className="text-lg font-semibold text-white">Top tiendas</h2>
-            </div>
-            {/* Aquí va la lista de top tiendas */}
-            <div className="text-gray-500 text-center">Lista de tiendas</div>
-          </div>
-        </div>
-        {/* Otros KPIs */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gradient-to-br from-pink-600/20 to-pink-800/20 rounded-2xl p-6 border border-pink-600/30 flex items-center gap-4">
-            <Package className="h-10 w-10 text-pink-400" />
-            <div>
-              <p className="text-pink-300 text-sm font-medium">Productos</p>
-              <p className="text-2xl font-bold text-white">{/* {stats.products} */}</p>
-            </div>
-          </div>
-          <div className="bg-gradient-to-br from-orange-600/20 to-orange-800/20 rounded-2xl p-6 border border-orange-600/30 flex items-center gap-4">
-            <Truck className="h-10 w-10 text-orange-400" />
-            <div>
-              <p className="text-orange-300 text-sm font-medium">Repartidores</p>
-              <p className="text-2xl font-bold text-white">{/* {stats.couriers} */}</p>
-            </div>
-          </div>
-          <div className="bg-gradient-to-br from-yellow-600/20 to-yellow-800/20 rounded-2xl p-6 border border-yellow-600/30 flex items-center gap-4">
-            <Star className="h-10 w-10 text-yellow-400" />
-            <div>
-              <p className="text-yellow-300 text-sm font-medium">Ticket promedio</p>
-              <p className="text-2xl font-bold text-white">{/* ${stats.avgTicket} */}</p>
+
+            {/* Métricas adicionales - Solo información esencial */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 bg-gray-50 rounded-lg">
+                    <Users className="h-4 w-4 text-gray-600" />
+                  </div>
+                  <h3 className="text-sm font-medium text-gray-900">Repartidores</h3>
+                </div>
+                <p className="text-2xl font-bold text-gray-900">{stats?.couriers.total || 0}</p>
+              </div>
+              
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 bg-gray-50 rounded-lg">
+                    <Store className="h-4 w-4 text-gray-600" />
+                  </div>
+                  <h3 className="text-sm font-medium text-gray-900">Productos</h3>
+                </div>
+                <p className="text-2xl font-bold text-gray-900">{stats?.products.total || 0}</p>
+              </div>
+              
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 bg-gray-50 rounded-lg">
+                    <DollarSign className="h-4 w-4 text-gray-600" />
+                  </div>
+                  <h3 className="text-sm font-medium text-gray-900">Ticket promedio</h3>
+                </div>
+                <p className="text-2xl font-bold text-gray-900">
+                  ${stats?.sales.averageTicket ? stats.sales.averageTicket.toFixed(0) : '0'}
+                </p>
+              </div>
             </div>
           </div>
         </div>
