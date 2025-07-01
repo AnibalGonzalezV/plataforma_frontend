@@ -11,7 +11,7 @@ export default function AdminDashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen bg-gray-50">
+      <div className="flex min-h-screen bg-slate-900">
         <SideBar />
         <div className="flex-1 flex flex-col">
           <Header />
@@ -25,7 +25,7 @@ export default function AdminDashboard() {
 
   if (error) {
     return (
-      <div className="flex min-h-screen bg-gray-50">
+      <div className="flex min-h-screen bg-slate-900">
         <SideBar />
         <div className="flex-1 flex flex-col">
           <Header />
@@ -38,7 +38,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-slate-900">
       <SideBar />
       <div className="flex-1 flex flex-col">
         <Header />
