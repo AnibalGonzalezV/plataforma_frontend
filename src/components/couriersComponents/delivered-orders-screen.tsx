@@ -55,8 +55,8 @@ export function DeliveredOrdersScreen() {
         </Alert>
       ) : (
         deliveredOrders.map((order) => (
-          <div className="text-white">
-            <CourierOrderCard key={order.order_id} order={order} />
+          <div key={order.order_id} className="text-white">
+            <CourierOrderCard order={order} />
           </div>
         ))
       )}

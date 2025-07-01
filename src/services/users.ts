@@ -84,3 +84,4 @@ export async function statusUser(userId: number, option: string) {
     throw new Error(error.message || 'Failed to update user state');
   }
 }
+

@@ -13,7 +13,6 @@ const Home = lazy(() => import('@/components/usersComponents/Home'));
 const UserSettings = lazy(() => import('@/components/usersComponents/UserSettings'));
 const UserProfile = lazy(() => import('@/components/usersComponents/UserProfile'));
 const OrdersList = lazy(() => import('@/components/usersComponents/OrdersList'));
-const CheckoutPayment = lazy(() => import('@/components/usersComponents/CheckoutPayment'));
 
 const CourierHome = lazy(() => import('@/components/couriersComponents/CourierHome'));
 const CourierOrdersList = lazy(() => import('@/components/couriersComponents/CourierOrdersList'));
@@ -43,7 +42,6 @@ export default function AppRouter () {
                         <Route path='/tiendas' element={<Home/>}/>
                         <Route path='/tiendas/:storeId' element={<VendorProducts/>}/>
                         <Route path='/pedidos' element={<OrdersList/>}/>
-                        <Route path='/pago' element={<CheckoutPayment/>}/>
                         <Route path='/configuracion' element={<UserSettings/>}/>
                         <Route path='/perfil' element={<UserProfile/>}/>
                     </Route>

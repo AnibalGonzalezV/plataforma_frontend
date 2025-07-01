@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import SideBar from '@/components/SideBar';
+import Header from '@/components/Header';
 
 export default function UserSettings() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -19,7 +21,7 @@ export default function UserSettings() {
       return;
     }
     setLoading(true);
-    // Aquí iría la llamada real a la API para cambiar contraseña
+    // Simulación de llamada a API
     setTimeout(() => {
       setLoading(false);
       setCurrentPassword('');
@@ -30,57 +32,67 @@ export default function UserSettings() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
-      <div className="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700 p-8">
-        <h2 className="text-2xl font-bold mb-6 text-white text-center">Configuración de cuenta</h2>
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-base text-gray-200 mb-1">Contraseña actual</label>
-            <input
-              type="password"
-              value={currentPassword}
-              onChange={e => setCurrentPassword(e.target.value)}
-              required
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-              placeholder="Ingresa tu contraseña actual"
-            />
+    <div className="flex min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <SideBar />
+      <div className="flex flex-1 flex-col">
+        <Header />
+        <div className="flex flex-1 items-center justify-center p-8">
+          <div className="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700 p-8">
+            <h2 className="text-2xl font-bold mb-6 text-white text-center">Configuración de cuenta</h2>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="block text-base text-gray-200 mb-1">Contraseña actual</label>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={e => setCurrentPassword(e.target.value)}
+                  required
+                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Ingresa tu contraseña actual"
+                />
+              </div>
+              <div>
+                <label className="block text-base text-gray-200 mb-1">Nueva contraseña</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Mínimo 6 caracteres"
+                />
+              </div>
+              <div>
+                <label className="block text-base text-gray-200 mb-1">Repetir nueva contraseña</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Repite la nueva contraseña"
+                />
+              </div>
+              {message && (
+                <p className={`text-center ${message.includes('exitosamente') ? 'text-green-400' : 'text-red-400'}`}>
+                  {message}
+                </p>
+              )}
+              <div className="flex justify-end pt-4">
+                <button
+                  type="submit"
+                  className="px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-200 shadow-lg"
+                  disabled={loading}
+                >
+                  {loading ? 'Guardando...' : 'Guardar cambios'}
+                </button>
+              </div>
+            </form>
           </div>
-          <div>
-            <label className="block text-base text-gray-200 mb-1">Nueva contraseña</label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
-              required
-              minLength={6}
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-              placeholder="Mínimo 6 caracteres"
-            />
-          </div>
-          <div>
-            <label className="block text-base text-gray-200 mb-1">Repetir nueva contraseña</label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-              required
-              minLength={6}
-              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-              placeholder="Repite la nueva contraseña"
-            />
-          </div>
-          {message && <p className={`text-center ${message.includes('exitosamente') ? 'text-green-400' : 'text-red-400'}`}>{message}</p>}
-          <div className="flex justify-end pt-4">
-            <button
-              type="submit"
-              className="px-6 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all duration-200 shadow-lg"
-              disabled={loading}
-            >
-              {loading ? 'Guardando...' : 'Guardar cambios'}
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );
-} 
+}
